@@ -47,30 +47,57 @@ import java.time.LocalDate
 @Composable
 fun LibraryScreen() {
     BaseScreen {
-        Text("Current Checkouts", style = Typography.headlineMedium)
-        FilterRow()
-        LibraryBookCard(
-            bookId = 1,
-            title = "Gideon the Ninth",
-            dueDate = "Feb 13 - 3 days",
-            cover = R.drawable.gideon,
-            isPhysical = true,
-        )
-        LibraryBookCard(
-            bookId = 1,
-            title = "Gideon the Ninth with a long title",
-            dueDate = "Feb 13",
-            cover = R.drawable.gideon,
-            isPhysical = false,
-        )
-        LibraryBookCard(
-            bookId = 1,
-            title = "The long way to a small angry planet",
-            dueDate = "Feb 13",
-            cover = R.drawable.gideon,
-            isPhysical = true,
-        )
+        CurrentCheckouts()
+        LibraryHolds()
     }
+}
+
+@Composable
+fun LibraryHolds() {
+    Text("Physical Holds", style = Typography.headlineMedium)
+    HoldBookCard(
+        bookId = 1,
+        title = "Gideon the Ninth",
+        status = "Expected Apr 17th",
+        cover = R.drawable.gideon,
+        onCheckoutClicked = {},
+        onDeleteHoldClicked = {},
+    )
+    HoldBookCard(
+        bookId = 1,
+        title = "Gideon the Ninth",
+        status = "Ready for Pickup",
+        cover = R.drawable.gideon,
+        onCheckoutClicked = {},
+        onDeleteHoldClicked = {},
+    )
+}
+
+@Composable
+fun CurrentCheckouts() {
+    Text("Current Checkouts", style = Typography.headlineMedium)
+    FilterRow()
+    LibraryBookCard(
+        bookId = 1,
+        title = "Gideon the Ninth",
+        dueDate = "Feb 13 - 3 days",
+        cover = R.drawable.gideon,
+        isPhysical = true,
+    )
+    LibraryBookCard(
+        bookId = 1,
+        title = "Gideon the Ninth with a long title",
+        dueDate = "Feb 13",
+        cover = R.drawable.gideon,
+        isPhysical = false,
+    )
+    LibraryBookCard(
+        bookId = 1,
+        title = "The long way to a small angry planet",
+        dueDate = "Feb 13",
+        cover = R.drawable.gideon,
+        isPhysical = true,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,6 +210,60 @@ fun LibraryBookCard(
                         modifier = Modifier.size(50.dp),
                         painter = painterResource(id = R.drawable.renew),
                         contentDescription = "Renew $title"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun HoldBookCard(
+    bookId: Int,
+    title: String,
+    status: String,
+    @DrawableRes cover: Int,
+    onCheckoutClicked: () -> Unit,
+    onDeleteHoldClicked: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .padding(vertical = 8.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painterResource(id = R.drawable.gideon),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(80.dp),
+            )
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .padding(start = 8.dp)
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                Text(title, style = Typography.headlineMedium)
+                Text(status, style = Typography.bodyMedium)
+            }
+            Column {
+                IconButton(onClick = onCheckoutClicked) {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(id = R.drawable.done),
+                        contentDescription = "Mark $title as checked out"
+                    )
+                }
+                IconButton(onClick = onDeleteHoldClicked) {
+                    Icon(
+                        modifier = Modifier.size(50.dp),
+                        painter = painterResource(id = R.drawable.delete),
+                        contentDescription = "Remove hold for $title"
                     )
                 }
             }
