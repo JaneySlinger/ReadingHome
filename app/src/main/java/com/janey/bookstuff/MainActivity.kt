@@ -48,7 +48,7 @@ sealed class Screen(
     val route: String,
     @StringRes val screenName: Int,
     @DrawableRes val icon: Int? = null,
-    val hasFAB: Boolean = false,
+    val hasFAB: Boolean = true,
 ) {
     data object Home : Screen(
         route = Routes.HOME.name,

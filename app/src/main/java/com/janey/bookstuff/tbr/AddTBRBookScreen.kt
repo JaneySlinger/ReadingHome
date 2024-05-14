@@ -20,6 +20,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -41,7 +42,7 @@ import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTBRBookScreen(
     title: String,
@@ -82,15 +83,7 @@ fun AddTBRBookScreen(
             }
         }
 
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Sci-Fi") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Fantasy") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Romance") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Contemporary") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Classic") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Non-Fiction") })
-            InputChip(selected = false, onClick = { /*TODO*/ }, label = { Text("YA") })
-        }
+        GenreFilterChips()
         TextField(
             label = {Text("Book info")},
             value = "",
@@ -118,6 +111,20 @@ fun AddTBRBookScreen(
                 Text("Add to TBR")
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GenreFilterChips() {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
+        FilterChip(selected = true, onClick = { /*TODO*/ }, label = { Text("Sci-Fi") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Fantasy") })
+        FilterChip(selected = true, onClick = { /*TODO*/ }, label = { Text("Romance") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("YA") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Contemporary") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Classic") })
+        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Non-Fiction") })
     }
 }
 

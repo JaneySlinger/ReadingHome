@@ -1,24 +1,73 @@
 package com.janey.bookstuff.tbr
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.janey.bookstuff.library.LibraryScreen
+import androidx.compose.ui.unit.dp
+import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
+import com.janey.bookstuff.ui.theme.Typography
 
 @Composable
 fun TBRScreen() {
     BaseScreen {
-        Text("Books to read will appear here")
+        RecentlyReleased()
+        TBRGrid(
+            listOf(
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+                R.drawable.gideon,
+            )
+        )
     }
 }
 
@@ -34,6 +83,161 @@ fun TBRScreenFAB(onClick: () -> Unit = {}) {
         )
     }
 }
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun RecentlyReleased() {
+    Surface(
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        tonalElevation = 150.dp,
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = "Recently Released",
+                style = Typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "Books released in the last 3 months",
+                style = Typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                repeat(3) {
+                    Image(
+                        painterResource(id = R.drawable.gideon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(shape = RoundedCornerShape(4.dp))
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun SortDropDown(modifier: Modifier = Modifier) {
+    var sortExpanded by remember { mutableStateOf(false) }
+    var sortType by remember { mutableStateOf(SortType.DATE_ADDED) }
+    Box(modifier = modifier) {
+        InputChip(selected = false,
+            onClick = { sortExpanded = true },
+            label = { Text(sortType.title) },
+            leadingIcon = { Icon(painterResource(sortType.icon), contentDescription = null) },
+            trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, null) })
+        DropdownMenu(expanded = sortExpanded, onDismissRequest = { sortExpanded = false }) {
+            SortType.values().forEach {
+                DropdownMenuItem(
+                    text = { Text(it.title) },
+                    onClick = {
+                        sortType = it
+                        sortExpanded = false
+                    },
+                    leadingIcon = { Icon(painterResource(it.icon), contentDescription = null) },
+                    trailingIcon = {
+                        if (sortType == it) Icon(Icons.Outlined.Check, null)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LayoutOptions(
+    modifier: Modifier = Modifier,
+    layoutOption: LayoutOptions,
+    onLayoutOptionSelected: (LayoutOptions) -> Unit = {}
+) {
+    LayoutOptions.values().forEach { option ->
+        IconToggleButton(
+            checked = layoutOption == option,
+            onCheckedChange = { onLayoutOptionSelected(option) },
+        ) {
+            Icon(painterResource(id = option.icon), contentDescription = option.title)
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun TBRGrid(books: List<Int>) {
+    var layoutOption by remember { mutableStateOf(LayoutOptions.GRID) }
+    FlowRow {
+        SortDropDown(modifier = Modifier.weight(1f, fill = true))
+        LayoutOptions(layoutOption = layoutOption,
+            onLayoutOptionSelected = { layoutOption = it })
+    }
+    HorizontalDivider()
+    GenreFilterChips()
+    Column(modifier = Modifier.fillMaxSize()) {
+        AnimatedContent(layoutOption, label = "layoutOption") {
+            when (it) {
+                LayoutOptions.GRID ->
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 60.dp),
+                        modifier = Modifier.height(600.dp)
+                    ) {
+                        items(books) { book ->
+                            Image(
+                                painterResource(id = book),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(2.dp)
+                                    .clip(shape = RoundedCornerShape(4.dp))
+                            )
+                        }
+                    }
+
+                LayoutOptions.LIST ->
+                    LazyColumn(modifier = Modifier.height(600.dp)) {
+                        items(books) { book ->
+                            Row(modifier = Modifier
+                                .clickable { /*TODO*/ }
+                                .fillMaxWidth()) {
+                                Image(
+                                    painterResource(id = book),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(2.dp)
+                                        .clip(shape = RoundedCornerShape(4.dp))
+                                )
+                                Column(modifier = Modifier.padding(start = 4.dp)) {
+                                    Text(text = "Book Title", style = Typography.headlineSmall)
+                                    Text(text = "Author", style = Typography.bodyMedium)
+                                    Text(text = "Page count: 100", style = Typography.bodyMedium)
+                                    Row() {
+                                        Box(
+                                            modifier = Modifier
+                                                .padding(2.dp)
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(MaterialTheme.colorScheme.tertiaryContainer)
+                                        ) {
+                                            Text(
+                                                text = "Romance", style = Typography.labelMedium,
+                                                modifier = Modifier.padding(4.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+                        }
+                    }
+            }
+        }
+    }
+}
+
 
 @PreviewLightDark
 @Composable
