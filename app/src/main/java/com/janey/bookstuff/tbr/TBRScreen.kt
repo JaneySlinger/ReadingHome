@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -43,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -54,18 +57,44 @@ import com.janey.bookstuff.ui.theme.Typography
 @Composable
 fun TBRScreen() {
     BaseScreen {
-        RecentlyReleased()
+//        RecentlyReleased()
         TBRGrid(
             listOf(
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
-                R.drawable.gideon,
+                TBRBook(
+                    title = "Gideon the Ninth",
+                    author = "Tamsyn Muir",
+                    pages = 410,
+                    genres = listOf("sci-fi"),
+                    image = R.drawable.gideon
+                ),
+                TBRBook(
+                    title = "My Roommate is a Vampire",
+                    author = "Jenna Levine",
+                    pages = 360,
+                    genres = listOf("romance", "fantasy"),
+                    image = R.drawable.vampire
+                ),
+                TBRBook(
+                    title = "The Two Towers",
+                    author = "J. R. R. Tolkien",
+                    pages = 350,
+                    genres = listOf("fantasy"),
+                    image = R.drawable.two_towers
+                ),
+                TBRBook(
+                    title = "When Among Crows",
+                    author = "Veronica Roth",
+                    pages = 176,
+                    genres = listOf("fantasy"),
+                    image = R.drawable.crows
+                ),
+                TBRBook(
+                    title = "The Stars Too Fondly",
+                    author = "Emily Hamilton",
+                    pages = 336,
+                    genres = listOf("sci-fi", "romance"),
+                    image = R.drawable.stars_fondly
+                ),
             )
         )
     }
@@ -100,7 +129,7 @@ fun RecentlyReleased() {
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "Books released in the last 3 months",
+                text = "These books you were interested in were released recently, why not check them out?",
                 style = Typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -170,7 +199,7 @@ fun LayoutOptions(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TBRGrid(books: List<Int>) {
+fun TBRGrid(books: List<TBRBook>) {
     var layoutOption by remember { mutableStateOf(LayoutOptions.GRID) }
     FlowRow {
         SortDropDown(modifier = Modifier.weight(1f, fill = true))
@@ -184,15 +213,17 @@ fun TBRGrid(books: List<Int>) {
             when (it) {
                 LayoutOptions.GRID ->
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 60.dp),
+                        columns = GridCells.Adaptive(minSize = 80.dp),
                         modifier = Modifier.height(600.dp)
                     ) {
                         items(books) { book ->
                             Image(
-                                painterResource(id = book),
+                                painterResource(id = book.image),
                                 contentDescription = null,
+                                contentScale = ContentScale.FillHeight,
                                 modifier = Modifier
                                     .padding(2.dp)
+                                    .height(150.dp)
                                     .clip(shape = RoundedCornerShape(4.dp))
                             )
                         }
@@ -205,27 +236,31 @@ fun TBRGrid(books: List<Int>) {
                                 .clickable { /*TODO*/ }
                                 .fillMaxWidth()) {
                                 Image(
-                                    painterResource(id = book),
+                                    painterResource(id = book.image),
                                     contentDescription = null,
+                                    contentScale = ContentScale.FillHeight,
                                     modifier = Modifier
                                         .padding(2.dp)
+                                        .height(150.dp)
                                         .clip(shape = RoundedCornerShape(4.dp))
                                 )
                                 Column(modifier = Modifier.padding(start = 4.dp)) {
-                                    Text(text = "Book Title", style = Typography.headlineSmall)
-                                    Text(text = "Author", style = Typography.bodyMedium)
-                                    Text(text = "Page count: 100", style = Typography.bodyMedium)
+                                    Text(text = book.title, style = Typography.headlineSmall)
+                                    Text(text = book.author, style = Typography.bodyMedium)
+                                    Text(text = "${book.pages} pages", style = Typography.bodyMedium)
                                     Row() {
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(2.dp)
-                                                .clip(RoundedCornerShape(4.dp))
-                                                .background(MaterialTheme.colorScheme.tertiaryContainer)
-                                        ) {
-                                            Text(
-                                                text = "Romance", style = Typography.labelMedium,
-                                                modifier = Modifier.padding(4.dp)
-                                            )
+                                        book.genres.forEach { genre ->
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(2.dp)
+                                                    .clip(RoundedCornerShape(4.dp))
+                                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
+                                            ) {
+                                                Text(
+                                                    text = genre, style = Typography.labelMedium,
+                                                    modifier = Modifier.padding(4.dp)
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -254,3 +289,11 @@ fun TBRScreenFABPreview() {
         TBRScreenFAB()
     }
 }
+
+data class TBRBook(
+    val title: String,
+    val author: String,
+    val pages: Int,
+    val genres: List<String>,
+    val image: Int
+)

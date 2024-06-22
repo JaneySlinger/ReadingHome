@@ -85,7 +85,7 @@ fun AddTBRBookScreen(
 
         GenreFilterChips()
         TextField(
-            label = {Text("Book info")},
+            label = {Text("Why do you want to read it?")},
             value = "",
             onValueChange = {},
             singleLine = false,

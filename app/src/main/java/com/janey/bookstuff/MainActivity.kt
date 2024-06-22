@@ -8,7 +8,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -29,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -37,7 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.janey.bookstuff.goals.GoalsScreen
 import com.janey.bookstuff.home.HomeScreen
 import com.janey.bookstuff.library.LibraryScreen
-import com.janey.bookstuff.read.ReadScreen
+import com.janey.bookstuff.stats.StatsScreen
 import com.janey.bookstuff.tbr.AddTBRBookScreen
 import com.janey.bookstuff.tbr.TBRScreen
 import com.janey.bookstuff.tbr.TBRScreenFAB
@@ -69,10 +67,10 @@ sealed class Screen(
         hasFAB = true
     )
 
-    data object Read : Screen(
-        route = Routes.READ.name,
-        screenName = R.string.read,
-        icon = R.drawable.book
+    data object Stats : Screen(
+        route = Routes.STATS.name,
+        screenName = R.string.stats,
+        icon = R.drawable.stats
     )
 
     data object Goals : Screen(
@@ -91,7 +89,7 @@ sealed class Screen(
         HOME,
         LIBRARY,
         TBR,
-        READ,
+        STATS,
         GOALS,
         ADD_TBR,
     }
@@ -124,7 +122,7 @@ fun MainScreen() {
             Screen.Home,
             Screen.Library,
             Screen.TBR,
-            Screen.Read,
+            Screen.Stats,
             Screen.Goals,
         )
         val navController = rememberNavController()
@@ -195,10 +193,10 @@ fun MainScreen() {
                         { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
                     TBRScreen()
                 }
-                composable(Screen.Read.route) {
-                    screenTitle = Screen.Read.screenName
-                    hasFAB = Screen.Read.hasFAB
-                    ReadScreen()
+                composable(Screen.Stats.route) {
+                    screenTitle = Screen.Stats.screenName
+                    hasFAB = Screen.Stats.hasFAB
+                    StatsScreen()
                 }
                 composable(Screen.Goals.route) {
                     screenTitle = Screen.Goals.screenName
