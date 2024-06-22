@@ -187,7 +187,7 @@ fun LayoutOptions(
     layoutOption: LayoutOptions,
     onLayoutOptionSelected: (LayoutOptions) -> Unit = {}
 ) {
-    LayoutOptions.values().forEach { option ->
+    LayoutOptions.entries.forEach { option ->
         IconToggleButton(
             checked = layoutOption == option,
             onCheckedChange = { onLayoutOptionSelected(option) },
