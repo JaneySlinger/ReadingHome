@@ -83,15 +83,10 @@ fun AddTBRBookScreen(
             }
         }
 
-        GenreFilterChips(selectedGenres = mutableSetOf(
-            GenreSelection(Genre.SCI_FI, false),
-            GenreSelection(Genre.FANTASY, false),
-            GenreSelection(Genre.ROMANCE, false),
-            GenreSelection(Genre.NON_FICTION, false),
-            GenreSelection(Genre.CLASSIC, false),
-            GenreSelection(Genre.CONTEMPORARY, false),
-        ),
-            onChipSelected = { /*TODO handle genre */ })
+        GenreFilterChips(
+            defaultChipSelection = false,
+            onChipSelected = { _, _ -> /*TODO handle genre */ }
+        )
         TextField(
             label = { Text("Why do you want to read it?") },
             value = "",
@@ -126,20 +121,22 @@ fun AddTBRBookScreen(
 @Composable
 fun GenreFilterChips(
     modifier: Modifier = Modifier,
-    selectedGenres: GenreSelections,
-    onChipSelected: (GenreSelection) -> Unit,
+    defaultChipSelection: Boolean = true,
+    onChipSelected: (Genre, Boolean) -> Unit,
 ) {
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        selectedGenres.forEach {
+        Genre.entries.forEach {
+            var selected by remember { mutableStateOf(defaultChipSelection) }
             FilterChip(
-                selected = it.selected,
+                selected = selected,
                 onClick = {
-                    onChipSelected(it)
+                    selected = !selected
+                    onChipSelected(it, selected)
                 },
-                label = { Text(it.genre.title) })
+                label = { Text(it.title) })
         }
     }
 }

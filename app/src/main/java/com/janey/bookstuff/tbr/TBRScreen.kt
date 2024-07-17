@@ -64,8 +64,14 @@ fun TBRScreen(
             books = state.filteredBooks,
             sortType = state.sortType,
             onSortTypeSelected = { viewModel.handleEvent(TBREvent.SortChanged(it)) },
-            selectedGenres = state.genres,
-            onGenreSelected = { viewModel.handleEvent(TBREvent.FilterChanged(it)) }
+            onGenreSelected = { genre, selected ->
+                viewModel.handleEvent(
+                    TBREvent.FilterChanged(
+                        genre,
+                        selected
+                    )
+                )
+            }
         )
     }
 }
@@ -171,8 +177,7 @@ fun LayoutOptions(
 @Composable
 fun TBRGrid(
     books: List<TBRBook>,
-    selectedGenres: GenreSelections,
-    onGenreSelected: (GenreSelection) -> Unit,
+    onGenreSelected: (Genre, Boolean) -> Unit,
     sortType: SortType,
     onSortTypeSelected: (SortType) -> Unit,
 ) {
@@ -186,10 +191,7 @@ fun TBRGrid(
         LayoutOptions(layoutOption = layoutOption, onLayoutOptionSelected = { layoutOption = it })
     }
     HorizontalDivider()
-    GenreFilterChips(
-        selectedGenres = selectedGenres,
-        onChipSelected = onGenreSelected,
-    )
+    GenreFilterChips(onChipSelected = onGenreSelected)
     Column(modifier = Modifier.fillMaxSize()) {
         AnimatedContent(layoutOption, label = "layoutOption") {
             when (it) {
@@ -280,7 +282,6 @@ fun TBRListPreview() {
         TBRListLayout(books = previewBooks)
     }
 }
-
 
 
 val previewBooks = listOf(
