@@ -69,13 +69,13 @@ fun AddTBRBookScreen(
             )
             Column {
                 TextField(
-                    label = {Text("Title")},
+                    label = { Text("Title") },
                     value = "",
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
-                    label = {Text("Author")},
+                    label = { Text("Author") },
                     value = "",
                     onValueChange = {},
                     modifier = Modifier.fillMaxWidth()
@@ -83,9 +83,17 @@ fun AddTBRBookScreen(
             }
         }
 
-        GenreFilterChips()
+        GenreFilterChips(selectedGenres = mutableSetOf(
+            GenreSelection(Genre.SCI_FI, false),
+            GenreSelection(Genre.FANTASY, false),
+            GenreSelection(Genre.ROMANCE, false),
+            GenreSelection(Genre.NON_FICTION, false),
+            GenreSelection(Genre.CLASSIC, false),
+            GenreSelection(Genre.CONTEMPORARY, false),
+        ),
+            onChipSelected = { /*TODO handle genre */ })
         TextField(
-            label = {Text("Why do you want to read it?")},
+            label = { Text("Why do you want to read it?") },
             value = "",
             onValueChange = {},
             singleLine = false,
@@ -116,15 +124,23 @@ fun AddTBRBookScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GenreFilterChips() {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
-        FilterChip(selected = true, onClick = { /*TODO*/ }, label = { Text("Sci-Fi") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Fantasy") })
-        FilterChip(selected = true, onClick = { /*TODO*/ }, label = { Text("Romance") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("YA") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Contemporary") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Classic") })
-        FilterChip(selected = false, onClick = { /*TODO*/ }, label = { Text("Non-Fiction") })
+fun GenreFilterChips(
+    modifier: Modifier = Modifier,
+    selectedGenres: GenreSelections,
+    onChipSelected: (GenreSelection) -> Unit,
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        selectedGenres.forEach {
+            FilterChip(
+                selected = it.selected,
+                onClick = {
+                    onChipSelected(it)
+                },
+                label = { Text(it.genre.title) })
+        }
     }
 }
 
@@ -133,12 +149,11 @@ fun GenreFilterChips() {
 fun AddTBRBookScreenPreview() {
     BookStuffTheme {
         AddTBRBookScreen(
-           "Title",
+            "Title",
             "Author",
             "Sci-fi",
             bookInfo = "",
-            submitText = "Submit",
-            {}
-        )
+            submitText = "Submit"
+        ) {}
     }
 }
