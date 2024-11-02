@@ -55,6 +55,8 @@ class TBRViewModel @Inject constructor() : ViewModel() {
     }
 }
 
+
+// TODO should this be shared between different screens?
 data class TBRBook(
     val title: String,
     val author: String,
@@ -72,13 +74,14 @@ data class TBRState(
 )
 
 sealed class TBREvent {
-    class SortChanged(val sortType: SortType) : TBREvent()
-    class FilterChanged(
+    data class SortChanged(val sortType: SortType) : TBREvent()
+    data class FilterChanged(
         val selectedGenre: Genre,
         val isSelected: Boolean
     ) : TBREvent()
 }
 
+// TODO janey make this a broader used enum
 enum class Genre(
     val title: String,
 ) {

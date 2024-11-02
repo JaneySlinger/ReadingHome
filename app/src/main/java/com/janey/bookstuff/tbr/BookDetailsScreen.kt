@@ -1,15 +1,20 @@
 package com.janey.bookstuff.tbr
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +29,22 @@ import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
+import java.util.Date
+
+/*
+- Update
+- Delete
+- See release date if not already out
+- See genres
+- See why I wanted to read it
+ */
 
 @Composable
-fun BookDetailsScreen(modifier: Modifier = Modifier) {
+fun BookDetailsScreen(
+    genres: List<Genre>,
+    releaseDate: Date,
+    modifier: Modifier = Modifier
+) {
     BaseScreen {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -39,19 +57,30 @@ fun BookDetailsScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(2.dp)
                     .height(200.dp)
-                    .border(width = 1.dp, color = MaterialTheme.colorScheme.onSurface, shape = RoundedCornerShape(4.dp))
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        shape = RoundedCornerShape(4.dp)
+                    )
                     .clip(shape = RoundedCornerShape(4.dp))
 
 
             )
-            Badge() {
+            Badge {
                 Text("The Locked Tomb #1")
             }
+            ReleaseDate(releaseDate)
+            Genres(genres)
             Text(text = "Gideon the Ninth", style = Typography.titleLarge)
             Text(text = "Tamsyn Muir", style = Typography.titleSmall)
             Text("448 pages")
         }
-
+        Card {
+            Text(
+                modifier = Modifier.padding(8.dp),
+                text = "Entertaining and dark. Heard good things about it."
+            )
+        }
 
         Text(
             text = "The Emperor needs necromancers.\n" +
@@ -70,10 +99,36 @@ fun BookDetailsScreen(modifier: Modifier = Modifier) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Genres(genres: List<Genre>, modifier: Modifier = Modifier) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        genres.map {
+            Badge {
+                Text(it.title)
+            }
+        }
+    }
+}
+
+@Composable
+fun ReleaseDate(releaseDate: Date, modifier: Modifier = Modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(painterResource(R.drawable.date_range), null)
+        Text(DateFormat.format("dd MMM yyyy", releaseDate).toString())
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun BookDetailsScreenPreview() {
     BookStuffTheme {
-        BookDetailsScreen()
+        BookDetailsScreen(
+            genres = listOf(Genre.SCI_FI, Genre.ROMANCE),
+            releaseDate = Date(),
+        )
     }
 }

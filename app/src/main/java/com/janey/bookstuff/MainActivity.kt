@@ -206,13 +206,13 @@ fun MainScreen() {
                 composable(Screen.AddTBRBook.route) {
                     screenTitle = Screen.AddTBRBook.screenName
                     hasFAB = Screen.AddTBRBook.hasFAB
-                    AddTBRBookScreen(
-                        title = it.arguments?.getString("title") ?: "",
-                        author = it.arguments?.getString("author") ?: "",
-                        genre = it.arguments?.getString("genre") ?: "",
-                        bookInfo = it.arguments?.getString("bookInfo") ?: "",
-                        submitText = it.arguments?.getString("submitText") ?: "",
-                        onSubmitClicked = {})
+                    AddTBRBookScreen() {}
+//                        title = it.arguments?.getString("title") ?: "",
+//                        author = it.arguments?.getString("author") ?: "",
+//                        genre = it.arguments?.getString("genre") ?: "",
+//                        bookInfo = it.arguments?.getString("bookInfo") ?: "",
+//                        submitText = it.arguments?.getString("submitText") ?: "",
+//                        onSubmitClicked = {})
                 }
             }
         }
