@@ -1,6 +1,9 @@
 package com.janey.bookstuff.tbr
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -55,9 +58,12 @@ import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun TBRScreen(
     viewModel: TBRViewModel = viewModel(),
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
     onBookClicked: (TBRBook) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -73,9 +79,12 @@ fun TBRScreen(
                     )
                 )
             },
-            onBookClicked = onBookClicked
+            onBookClicked = onBookClicked,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedContentScope = animatedContentScope
         )
     }
+
 }
 
 @Composable
@@ -175,7 +184,7 @@ fun LayoutOptions(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun TBRGrid(
     books: List<TBRBook>,
@@ -183,76 +192,99 @@ fun TBRGrid(
     sortType: SortType,
     onSortTypeSelected: (SortType) -> Unit,
     onBookClicked: (TBRBook) -> Unit,
+    // TODO janey maybe use a local composition to get these
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
     var layoutOption by remember { mutableStateOf(LayoutOptions.GRID) }
-    FlowRow {
-        SortDropDown(
-            modifier = Modifier.weight(1f, fill = true),
-            sortType = sortType,
-            onSortTypeSelected = onSortTypeSelected
-        )
-        LayoutOptions(layoutOption = layoutOption, onLayoutOptionSelected = { layoutOption = it })
-    }
-    HorizontalDivider()
-    GenreFilterChips(onChipSelected = onGenreSelected)
-    Column(modifier = Modifier.fillMaxSize()) {
-        AnimatedContent(layoutOption, label = "layoutOption") {
-            when (it) {
-                LayoutOptions.GRID -> LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 80.dp),
-                    modifier = Modifier.height(600.dp)
-                ) {
-                    items(books) { book ->
-                        BookImage(
-                            book = book,
-                            modifier = Modifier.clickable { onBookClicked(book) }
-                        )
+    with(sharedTransitionScope) {
+        FlowRow {
+            SortDropDown(
+                modifier = Modifier.weight(1f, fill = true),
+                sortType = sortType,
+                onSortTypeSelected = onSortTypeSelected
+            )
+            LayoutOptions(
+                layoutOption = layoutOption,
+                onLayoutOptionSelected = { layoutOption = it })
+        }
+        HorizontalDivider()
+        GenreFilterChips(onChipSelected = onGenreSelected)
+        Column(modifier = Modifier.fillMaxSize()) {
+            AnimatedContent(layoutOption, label = "layoutOption") {
+                when (it) {
+                    LayoutOptions.GRID -> LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 80.dp),
+                        modifier = Modifier.height(600.dp)
+                    ) {
+                        items(books) { book ->
+                            BookImage(
+                                book = book,
+                                modifier = Modifier
+                                    .clickable { onBookClicked(book) }
+                                    .sharedElement(
+                                        sharedTransitionScope.rememberSharedContentState(key = book.title),
+                                        animatedVisibilityScope = animatedContentScope,
+                                    )
+                            )
+                        }
                     }
-                }
 
-                LayoutOptions.LIST -> TBRListLayout(
-                    books = books,
-                    onBookClicked = onBookClicked,
-                )
+                    LayoutOptions.LIST -> TBRListLayout(
+                        books = books,
+                        onBookClicked = onBookClicked,
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope
+                    )
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun TBRListLayout(
     books: List<TBRBook>,
     onBookClicked: (TBRBook) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedContentScope,
 ) {
-    LazyColumn(modifier = Modifier.height(600.dp)) {
-        items(books) { book ->
-            Row(modifier = Modifier
-                .clickable { onBookClicked(book) }
-                .fillMaxWidth()) {
-                BookImage(book)
-                Column(modifier = Modifier.padding(start = 4.dp)) {
-                    Text(text = book.title, style = Typography.headlineSmall)
-                    Text(text = book.author, style = Typography.bodyMedium)
-                    Text(text = "${book.pages} pages", style = Typography.bodyMedium)
-                    Row() {
-                        book.genres.forEach { genre ->
-                            Box(
-                                modifier = Modifier
-                                    .padding(2.dp)
-                                    .clip(RoundedCornerShape(4.dp))
-                                    .background(MaterialTheme.colorScheme.tertiaryContainer)
-                            ) {
-                                Text(
-                                    text = genre.title,
-                                    style = Typography.labelMedium,
-                                    modifier = Modifier.padding(4.dp)
-                                )
+    with(sharedTransitionScope) {
+        LazyColumn(modifier = Modifier.height(600.dp)) {
+            items(books) { book ->
+                Row(modifier = Modifier
+                    .clickable { onBookClicked(book) }
+                    .fillMaxWidth()
+                    .sharedElement(
+                        sharedTransitionScope.rememberSharedContentState(key = book.title),
+                        animatedVisibilityScope = animatedContentScope,
+                    )) {
+                    BookImage(book)
+                    Column(modifier = Modifier.padding(start = 4.dp)) {
+                        Text(text = book.title, style = Typography.headlineSmall)
+                        Text(text = book.author, style = Typography.bodyMedium)
+                        Text(text = "${book.pages} pages", style = Typography.bodyMedium)
+                        Row() {
+                            book.genres.forEach { genre ->
+                                Box(
+                                    modifier = Modifier
+                                        .padding(2.dp)
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                                ) {
+                                    Text(
+                                        text = genre.title,
+                                        style = Typography.labelMedium,
+                                        modifier = Modifier.padding(4.dp)
+                                    )
+                                }
                             }
                         }
                     }
                 }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
         }
     }
 }
@@ -273,13 +305,13 @@ private fun BookImage(
 }
 
 
-@PreviewLightDark
-@Composable
-fun TBRScreenPreview() {
-    BookStuffTheme {
-        TBRScreen() {}
-    }
-}
+//@PreviewLightDark
+//@Composable
+//fun TBRScreenPreview() {
+//    BookStuffTheme {
+//        TBRScreen() {}
+//    }
+//}
 
 @PreviewLightDark
 @Composable
@@ -289,13 +321,16 @@ fun TBRScreenFABPreview() {
     }
 }
 
-@PreviewLightDark
-@Composable
-fun TBRListPreview() {
-    BookStuffTheme {
-        TBRListLayout(books = previewBooks) {}
-    }
-}
+//@PreviewLightDark
+//@Composable
+//fun TBRListPreview() {
+//    BookStuffTheme {
+//        TBRListLayout(
+//            books = previewBooks,
+//            onBookClicked = {}
+//        )
+//    }
+//}
 
 
 val previewBooks = listOf(
