@@ -35,9 +35,10 @@ import com.janey.bookstuff.home.HomeScreen
 import com.janey.bookstuff.library.LibraryScreen
 import com.janey.bookstuff.navigation.Screen
 import com.janey.bookstuff.stats.StatsScreen
-import com.janey.bookstuff.tbr.AddTBRBookScreen
 import com.janey.bookstuff.tbr.TBRScreen
 import com.janey.bookstuff.tbr.TBRScreenFAB
+import com.janey.bookstuff.tbr.addtbr.AddTBRBookScreen
+import com.janey.bookstuff.tbr.bookdetails.BookDetailsScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 
 
@@ -131,7 +132,7 @@ fun MainScreen() {
                     hasFAB = Screen.TBR.hasFAB
                     floatingActionButton =
                         { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
-                    TBRScreen()
+                    TBRScreen(onBookClicked = { navController.navigate(Screen.TBRDetail.route) })
                 }
                 composable(Screen.Stats.route) {
                     screenTitle = Screen.Stats.screenName
@@ -153,6 +154,11 @@ fun MainScreen() {
 //                        bookInfo = it.arguments?.getString("bookInfo") ?: "",
 //                        submitText = it.arguments?.getString("submitText") ?: "",
 //                        onSubmitClicked = {})
+                }
+                composable(Screen.TBRDetail.route) {
+                    screenTitle = Screen.TBRDetail.screenName
+                    hasFAB = Screen.TBRDetail.hasFAB
+                    BookDetailsScreen()
                 }
             }
         }

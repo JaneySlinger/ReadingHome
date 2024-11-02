@@ -50,13 +50,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.janey.bookstuff.R
+import com.janey.bookstuff.tbr.addtbr.GenreFilterChips
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
 
 @Composable
 fun TBRScreen(
-    viewModel: TBRViewModel = viewModel()
+    viewModel: TBRViewModel = viewModel(),
+    onBookClicked: (TBRBook) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     BaseScreen {
@@ -67,11 +69,11 @@ fun TBRScreen(
             onGenreSelected = { genre, selected ->
                 viewModel.handleEvent(
                     TBREvent.FilterChanged(
-                        genre,
-                        selected
+                        genre, selected
                     )
                 )
-            }
+            },
+            onBookClicked = onBookClicked
         )
     }
 }
@@ -180,6 +182,7 @@ fun TBRGrid(
     onGenreSelected: (Genre, Boolean) -> Unit,
     sortType: SortType,
     onSortTypeSelected: (SortType) -> Unit,
+    onBookClicked: (TBRBook) -> Unit,
 ) {
     var layoutOption by remember { mutableStateOf(LayoutOptions.GRID) }
     FlowRow {
@@ -200,22 +203,31 @@ fun TBRGrid(
                     modifier = Modifier.height(600.dp)
                 ) {
                     items(books) { book ->
-                        BookImage(book)
+                        BookImage(
+                            book = book,
+                            modifier = Modifier.clickable { onBookClicked(book) }
+                        )
                     }
                 }
 
-                LayoutOptions.LIST -> TBRListLayout(books)
+                LayoutOptions.LIST -> TBRListLayout(
+                    books = books,
+                    onBookClicked = onBookClicked,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TBRListLayout(books: List<TBRBook>) {
+private fun TBRListLayout(
+    books: List<TBRBook>,
+    onBookClicked: (TBRBook) -> Unit,
+) {
     LazyColumn(modifier = Modifier.height(600.dp)) {
         items(books) { book ->
             Row(modifier = Modifier
-                .clickable { /*TODO*/ }
+                .clickable { onBookClicked(book) }
                 .fillMaxWidth()) {
                 BookImage(book)
                 Column(modifier = Modifier.padding(start = 4.dp)) {
@@ -246,12 +258,14 @@ private fun TBRListLayout(books: List<TBRBook>) {
 }
 
 @Composable
-private fun BookImage(book: TBRBook) {
+private fun BookImage(
+    book: TBRBook, modifier: Modifier = Modifier
+) {
     Image(
         painterResource(id = book.image),
         contentDescription = null,
         contentScale = ContentScale.FillHeight,
-        modifier = Modifier
+        modifier = modifier
             .padding(2.dp)
             .height(150.dp)
             .clip(shape = RoundedCornerShape(4.dp))
@@ -263,7 +277,7 @@ private fun BookImage(book: TBRBook) {
 @Composable
 fun TBRScreenPreview() {
     BookStuffTheme {
-        TBRScreen()
+        TBRScreen() {}
     }
 }
 
@@ -279,7 +293,7 @@ fun TBRScreenFABPreview() {
 @Composable
 fun TBRListPreview() {
     BookStuffTheme {
-        TBRListLayout(books = previewBooks)
+        TBRListLayout(books = previewBooks) {}
     }
 }
 

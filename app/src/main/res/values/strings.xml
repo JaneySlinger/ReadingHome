@@ -6,8 +6,6 @@
     <string name="stats">Stats</string>
     <string name="goal">Goals</string>
 
-
-
-
     <string name="add_tbr">Add to TBR</string>
+    <string name="tbr_detail">TBR Details</string>
 </resources>

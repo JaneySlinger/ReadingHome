@@ -44,8 +44,13 @@ sealed class Screen(
     data object AddTBRBook : Screen(
         route = Routes.ADD_TBR.name,
         screenName = R.string.add_tbr,
+    )
 
-        )
+    data object TBRDetail : Screen(
+        route = Routes.TBR_DETAIL.name,
+        screenName = R.string.tbr_detail,
+    )
+
 
     enum class Routes {
         HOME,
@@ -54,5 +59,6 @@ sealed class Screen(
         STATS,
         GOALS,
         ADD_TBR,
+        TBR_DETAIL,
     }
 }

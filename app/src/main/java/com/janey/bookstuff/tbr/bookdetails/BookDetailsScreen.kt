@@ -1,4 +1,4 @@
-package com.janey.bookstuff.tbr
+package com.janey.bookstuff.tbr.bookdetails
 
 import android.text.format.DateFormat
 import androidx.compose.foundation.Image
@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.janey.bookstuff.R
+import com.janey.bookstuff.tbr.Genre
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
@@ -41,8 +42,8 @@ import java.util.Date
 
 @Composable
 fun BookDetailsScreen(
-    genres: List<Genre>,
-    releaseDate: Date,
+//    genres: List<Genre>,
+//    releaseDate: Date,
     modifier: Modifier = Modifier
 ) {
     BaseScreen {
@@ -69,8 +70,11 @@ fun BookDetailsScreen(
             Badge {
                 Text("The Locked Tomb #1")
             }
-            ReleaseDate(releaseDate)
-            Genres(genres)
+            ReleaseDate(Date())
+            Genres(listOf(Genre.SCI_FI, Genre.ROMANCE),)
+            // TODO janey update to use proper data
+//            ReleaseDate(releaseDate)
+//            Genres(genres)
             Text(text = "Gideon the Ninth", style = Typography.titleLarge)
             Text(text = "Tamsyn Muir", style = Typography.titleSmall)
             Text("448 pages")
@@ -127,8 +131,8 @@ fun ReleaseDate(releaseDate: Date, modifier: Modifier = Modifier) {
 private fun BookDetailsScreenPreview() {
     BookStuffTheme {
         BookDetailsScreen(
-            genres = listOf(Genre.SCI_FI, Genre.ROMANCE),
-            releaseDate = Date(),
+//            genres = listOf(Genre.SCI_FI, Genre.ROMANCE),
+//            releaseDate = Date(),
         )
     }
 }

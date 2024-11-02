@@ -1,6 +1,7 @@
-package com.janey.bookstuff.tbr
+package com.janey.bookstuff.tbr.addtbr
 
 import androidx.lifecycle.ViewModel
+import com.janey.bookstuff.tbr.Genre
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.Date
