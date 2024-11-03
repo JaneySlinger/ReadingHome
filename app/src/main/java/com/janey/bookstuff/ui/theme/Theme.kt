@@ -1,19 +1,21 @@
 package com.janey.bookstuff.ui.theme
 
 import android.app.Activity
-import android.os.Build
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.janey.bookstuff.ProvideAnimatedContentScope
+import com.janey.bookstuff.ProvideSharedTransitionScope
 
 val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -79,6 +81,7 @@ val DarkColorScheme = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookStuffTheme(
         darkTheme: Boolean = isSystemInDarkTheme(),
@@ -107,6 +110,17 @@ fun BookStuffTheme(
     MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
-            content = content
-    )
+    ) {
+        SharedTransitionLayout {
+            ProvideSharedTransitionScope {
+                if (LocalInspectionMode.current) {
+                    AnimatedContent(targetState = content, label = "LocalAnimatedContent") {
+                        ProvideAnimatedContentScope(it)
+                    }
+                } else {
+                    content()
+                }
+            }
+        }
+    }
 }

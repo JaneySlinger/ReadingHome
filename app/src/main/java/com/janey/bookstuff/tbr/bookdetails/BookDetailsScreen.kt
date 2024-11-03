@@ -1,9 +1,7 @@
 package com.janey.bookstuff.tbr.bookdetails
 
 import android.text.format.DateFormat
-import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,10 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.janey.bookstuff.LocalSharedTransitionScope
 import com.janey.bookstuff.R
+import com.janey.bookstuff.WithAnimatedContentScope
 import com.janey.bookstuff.tbr.Genre
 import com.janey.bookstuff.ui.components.BaseScreen
+import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
 import java.util.Date
 
@@ -42,67 +44,64 @@ import java.util.Date
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookDetailsScreen(
-//    genres: List<Genre>,
-//    releaseDate: Date,
-    sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedContentScope,
     modifier: Modifier = Modifier
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
     with(sharedTransitionScope) {
-        BaseScreen {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painterResource(id = R.drawable.vampire),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .height(200.dp)
-                        .clip(shape = RoundedCornerShape(4.dp))
-                        .sharedElement(
-                            // TODO janey update to book title
-                            sharedTransitionScope.rememberSharedContentState(key = "My Roommate is a Vampire"),
-                            animatedVisibilityScope = animatedContentScope,
-                        )
-                )
-                Badge {
-                    Text("The Locked Tomb #1")
+        WithAnimatedContentScope {
+            BaseScreen {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painterResource(id = R.drawable.vampire),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillHeight,
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .height(200.dp)
+                            .clip(shape = RoundedCornerShape(4.dp))
+                            .sharedElement(
+                                // TODO janey update to book title
+                                sharedTransitionScope.rememberSharedContentState(key = "My Roommate is a Vampire"),
+                                animatedVisibilityScope = this@WithAnimatedContentScope,
+                            )
+                    )
+                    Badge {
+                        Text("The Locked Tomb #1")
+                    }
+                    ReleaseDate(Date())
+                    Genres(listOf(Genre.SCI_FI, Genre.ROMANCE))
+                    Text(text = "Gideon the Ninth", style = Typography.titleLarge)
+                    Text(text = "Tamsyn Muir", style = Typography.titleSmall)
+                    Text("448 pages")
                 }
-                ReleaseDate(Date())
-                Genres(listOf(Genre.SCI_FI, Genre.ROMANCE))
-                // TODO janey update to use proper data
-//            ReleaseDate(releaseDate)
-//            Genres(genres)
-                Text(text = "Gideon the Ninth", style = Typography.titleLarge)
-                Text(text = "Tamsyn Muir", style = Typography.titleSmall)
-                Text("448 pages")
-            }
-            Card {
+                Card {
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = "Entertaining and dark. Heard good things about it."
+                    )
+                }
+
                 Text(
-                    modifier = Modifier.padding(8.dp),
-                    text = "Entertaining and dark. Heard good things about it."
+                    text = "The Emperor needs necromancers.\n" +
+                            "\n" +
+                            "The Ninth Necromancer needs a swordswoman.\n" +
+                            "\n" +
+                            "Gideon has a sword, some dirty magazines, and no more time for undead bullshit.\n" +
+                            "\n" +
+                            "Brought up by unfriendly, ossifying nuns, ancient retainers, and countless skeletons, Gideon is ready to abandon a life of servitude and an afterlife as a reanimated corpse. She packs up her sword, her shoes, and her dirty magazines, and prepares to launch her daring escape. But her childhood nemesis won't set her free without a service.\n" +
+                            "\n" +
+                            "Harrowhark Nonagesimus, Reverend Daughter of the Ninth House and bone witch extraordinaire, has been summoned into action. The Emperor has invited the heirs to each of his loyal Houses to a deadly trial of wits and skill. If Harrowhark succeeds she will become an immortal, all-powerful servant of the Resurrection, but no necromancer can ascend without their cavalier. Without Gideon's sword, Harrow will fail, and the Ninth House will die.\n" +
+                            "\n" +
+                            "Of course, some things are better left dead.",
+                    style = Typography.bodyMedium
                 )
             }
-
-            Text(
-                text = "The Emperor needs necromancers.\n" +
-                        "\n" +
-                        "The Ninth Necromancer needs a swordswoman.\n" +
-                        "\n" +
-                        "Gideon has a sword, some dirty magazines, and no more time for undead bullshit.\n" +
-                        "\n" +
-                        "Brought up by unfriendly, ossifying nuns, ancient retainers, and countless skeletons, Gideon is ready to abandon a life of servitude and an afterlife as a reanimated corpse. She packs up her sword, her shoes, and her dirty magazines, and prepares to launch her daring escape. But her childhood nemesis won't set her free without a service.\n" +
-                        "\n" +
-                        "Harrowhark Nonagesimus, Reverend Daughter of the Ninth House and bone witch extraordinaire, has been summoned into action. The Emperor has invited the heirs to each of his loyal Houses to a deadly trial of wits and skill. If Harrowhark succeeds she will become an immortal, all-powerful servant of the Resurrection, but no necromancer can ascend without their cavalier. Without Gideon's sword, Harrow will fail, and the Ninth House will die.\n" +
-                        "\n" +
-                        "Of course, some things are better left dead.",
-                style = Typography.bodyMedium
-            )
         }
     }
+
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -128,21 +127,10 @@ fun ReleaseDate(releaseDate: Date, modifier: Modifier = Modifier) {
     }
 }
 
-// TODO janey fix previews for sharedTransition
-//@OptIn(ExperimentalSharedTransitionApi::class)
-//@PreviewLightDark
-//@Composable
-//private fun BookDetailsScreenPreview() {
-//    BookStuffTheme {
-//        SharedTransitionLayout {
-//            AnimatedContent() {
-//                BookDetailsScreen(
-//                    sharedTransitionScope = this@SharedTransitionLayout,
-//                    animatedContentScope = this@AnimatedContent,
-////            genres = listOf(Genre.SCI_FI, Genre.ROMANCE),
-////            releaseDate = Date(),
-//                )
-//            }
-//        }
-//    }
-//}
+@PreviewLightDark
+@Composable
+private fun BookDetailsScreenPreview() {
+    BookStuffTheme {
+        BookDetailsScreen()
+    }
+}

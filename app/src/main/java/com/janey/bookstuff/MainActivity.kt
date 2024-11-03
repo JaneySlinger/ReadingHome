@@ -3,8 +3,6 @@ package com.janey.bookstuff
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,7 +61,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -114,61 +112,51 @@ fun MainScreen() {
             },
             topBar = { TopAppBar(title = { Text(text = stringResource(id = screenTitle)) }) }
         ) { innerPadding ->
-            SharedTransitionLayout {
-                NavHost(
-                    navController = navController,
-                    startDestination = Screen.Routes.HOME.name,
-                    modifier = Modifier.padding(innerPadding)
-                ) {
-                    composable(Screen.Home.route) {
-                        screenTitle = Screen.Home.screenName
-                        hasFAB = Screen.Home.hasFAB
-                        HomeScreen()
-                    }
-                    composable(Screen.Library.route) {
-                        screenTitle = Screen.Library.screenName
-                        hasFAB = Screen.Library.hasFAB
-                        LibraryScreen()
-                    }
-                    composable(Screen.TBR.route) {
-                        screenTitle = Screen.TBR.screenName
-                        hasFAB = Screen.TBR.hasFAB
-                        floatingActionButton =
-                            { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Routes.HOME.name,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(Screen.Home.route) {
+                    screenTitle = Screen.Home.screenName
+                    hasFAB = Screen.Home.hasFAB
+                    HomeScreen()
+                }
+                composable(Screen.Library.route) {
+                    screenTitle = Screen.Library.screenName
+                    hasFAB = Screen.Library.hasFAB
+                    LibraryScreen()
+                }
+                composable(Screen.TBR.route) {
+                    screenTitle = Screen.TBR.screenName
+                    hasFAB = Screen.TBR.hasFAB
+                    floatingActionButton = { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
+                    ProvideAnimatedContentScope {
                         TBRScreen(
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedContentScope = this@composable,
                             onBookClicked = { navController.navigate(Screen.TBRDetail.route) }
                         )
                     }
-                    composable(Screen.Stats.route) {
-                        screenTitle = Screen.Stats.screenName
-                        hasFAB = Screen.Stats.hasFAB
-                        StatsScreen()
-                    }
-                    composable(Screen.Goals.route) {
-                        screenTitle = Screen.Goals.screenName
-                        hasFAB = Screen.Goals.hasFAB
-                        GoalsScreen()
-                    }
-                    composable(Screen.AddTBRBook.route) {
-                        screenTitle = Screen.AddTBRBook.screenName
-                        hasFAB = Screen.AddTBRBook.hasFAB
-                        AddTBRBookScreen() {}
-//                        title = it.arguments?.getString("title") ?: "",
-//                        author = it.arguments?.getString("author") ?: "",
-//                        genre = it.arguments?.getString("genre") ?: "",
-//                        bookInfo = it.arguments?.getString("bookInfo") ?: "",
-//                        submitText = it.arguments?.getString("submitText") ?: "",
-//                        onSubmitClicked = {})
-                    }
-                    composable(Screen.TBRDetail.route) {
-                        screenTitle = Screen.TBRDetail.screenName
-                        hasFAB = Screen.TBRDetail.hasFAB
-                        BookDetailsScreen(
-                            sharedTransitionScope = this@SharedTransitionLayout,
-                            animatedContentScope = this@composable,
-                        )
+                }
+                composable(Screen.Stats.route) {
+                    screenTitle = Screen.Stats.screenName
+                    hasFAB = Screen.Stats.hasFAB
+                    StatsScreen()
+                }
+                composable(Screen.Goals.route) {
+                    screenTitle = Screen.Goals.screenName
+                    hasFAB = Screen.Goals.hasFAB
+                    GoalsScreen()
+                }
+                composable(Screen.AddTBRBook.route) {
+                    screenTitle = Screen.AddTBRBook.screenName
+                    hasFAB = Screen.AddTBRBook.hasFAB
+                    AddTBRBookScreen {}
+                }
+                composable(Screen.TBRDetail.route) {
+                    screenTitle = Screen.TBRDetail.screenName
+                    hasFAB = Screen.TBRDetail.hasFAB
+                    ProvideAnimatedContentScope {
+                        BookDetailsScreen()
                     }
                 }
             }
