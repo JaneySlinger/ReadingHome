@@ -47,7 +47,7 @@ sealed class Screen(
     )
 
     data object TBRDetail : Screen(
-        route = Routes.TBR_DETAIL.name,
+        route = "${Routes.TBR_DETAIL.name}/{title}",
         screenName = R.string.tbr_detail,
     )
 

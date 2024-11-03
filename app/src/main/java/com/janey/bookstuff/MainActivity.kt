@@ -26,14 +26,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.janey.bookstuff.goals.GoalsScreen
 import com.janey.bookstuff.home.HomeScreen
 import com.janey.bookstuff.library.LibraryScreen
 import com.janey.bookstuff.navigation.Screen
+import com.janey.bookstuff.navigation.Screen.Routes
 import com.janey.bookstuff.stats.StatsScreen
 import com.janey.bookstuff.tbr.TBRScreen
 import com.janey.bookstuff.tbr.TBRScreenFAB
@@ -133,7 +136,7 @@ fun MainScreen() {
                     floatingActionButton = { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
                     ProvideAnimatedContentScope {
                         TBRScreen(
-                            onBookClicked = { navController.navigate(Screen.TBRDetail.route) }
+                            onBookClicked = { navController.navigate("${Routes.TBR_DETAIL.name}/${it.title}") }
                         )
                     }
                 }
@@ -152,7 +155,10 @@ fun MainScreen() {
                     hasFAB = Screen.AddTBRBook.hasFAB
                     AddTBRBookScreen {}
                 }
-                composable(Screen.TBRDetail.route) {
+                composable(
+                    route = Screen.TBRDetail.route,
+                    arguments = listOf(navArgument("title") { type = NavType.StringType })
+                ) {
                     screenTitle = Screen.TBRDetail.screenName
                     hasFAB = Screen.TBRDetail.hasFAB
                     ProvideAnimatedContentScope {
