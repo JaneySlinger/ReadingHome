@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,7 +22,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.janey.bookstuff.R
 import com.janey.bookstuff.library.HoldBookCard
-import com.janey.bookstuff.library.LibraryBookCard
+import com.janey.bookstuff.library.CheckedOutLibraryBookCard
 import com.janey.bookstuff.tbr.RecentlyReleased
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
@@ -52,7 +51,7 @@ fun ExpiringSoonRow() {
         contentPadding = PaddingValues(end = 16.dp)
     ) { page ->
         Row(Modifier.padding(end = 8.dp)) {
-            LibraryBookCard(
+            CheckedOutLibraryBookCard(
                 bookId = 1,
                 title = "Gideon the Ninth",
                 dueDate = "Feb 13 - 3 days",
@@ -82,7 +81,6 @@ fun ExpiringSoonRow() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ReadyForPickupRow() {
     val pagerState = rememberPagerState(pageCount = {
@@ -102,6 +100,7 @@ fun ReadyForPickupRow() {
                 cover = R.drawable.gideon,
                 onCheckoutClicked = {},
                 onDeleteHoldClicked = {},
+                isReadyForPickup = true
             )
         }
     }

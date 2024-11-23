@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,11 +23,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults.filterChipColors
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,11 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewDynamicColors
-import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
@@ -66,6 +66,7 @@ fun LibraryHolds() {
         cover = R.drawable.gideon,
         onCheckoutClicked = {},
         onDeleteHoldClicked = {},
+        isReadyForPickup = false
     )
     HoldBookCard(
         bookId = 1,
@@ -74,6 +75,7 @@ fun LibraryHolds() {
         cover = R.drawable.gideon,
         onCheckoutClicked = {},
         onDeleteHoldClicked = {},
+        isReadyForPickup = true
     )
 }
 
@@ -81,21 +83,21 @@ fun LibraryHolds() {
 fun CurrentCheckouts() {
     Text("Current Checkouts", style = Typography.headlineMedium)
     FilterRow()
-    LibraryBookCard(
+    CheckedOutLibraryBookCard(
         bookId = 1,
         title = "Gideon the Ninth",
         dueDate = "Feb 13 - 3 days",
         cover = R.drawable.gideon,
         isPhysical = true,
     )
-    LibraryBookCard(
+    CheckedOutLibraryBookCard(
         bookId = 1,
         title = "Gideon the Ninth with a long title",
         dueDate = "Feb 13",
         cover = R.drawable.gideon,
         isPhysical = false,
     )
-    LibraryBookCard(
+    CheckedOutLibraryBookCard(
         bookId = 1,
         title = "The long way to a small angry planet",
         dueDate = "Feb 13",
@@ -167,53 +169,60 @@ sealed class TypeColours {
 }
 
 @Composable
-fun LibraryBookCard(
+fun CheckedOutLibraryBookCard(
     bookId: Int,
     title: String,
     dueDate: String,
     @DrawableRes cover: Int,
     isPhysical: Boolean,
+    onReturnClicked: () -> Unit = {},
+    onRenewClicked: () -> Unit = {},
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .padding(vertical = 8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painterResource(id = R.drawable.gideon),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(80.dp),
+    DismissableRow(
+        onStartToEnd = onRenewClicked,
+        onEndToStart = onReturnClicked,
+        startToEndIcon = {
+            Icon(
+                tint = colorScheme.primary,
+                modifier = Modifier.size(50.dp),
+                painter = painterResource(id = R.drawable.renew),
+                contentDescription = "Renew $title"
             )
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .padding(start = 8.dp)
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(title, style = Typography.headlineMedium)
-                Text(dueDate, style = Typography.bodyMedium)
-                LibraryBookTypePill(isPhysical)
-            }
-            Column {
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        modifier = Modifier.size(50.dp),
-                        painter = painterResource(id = R.drawable.done),
-                        contentDescription = "Mark $title as returned"
-                    )
-                }
-                IconButton(onClick = { /*TODO*/ }) {
-                    Icon(
-                        modifier = Modifier.size(50.dp),
-                        painter = painterResource(id = R.drawable.renew),
-                        contentDescription = "Renew $title"
-                    )
+        },
+        endToStartIcon = {
+            Icon(
+                tint = colorScheme.primary,
+                modifier = Modifier.size(50.dp),
+                painter = painterResource(id = R.drawable.done),
+                contentDescription = "Mark $title as returned"
+            )
+        },
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .padding(vertical = 8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painterResource(id = R.drawable.gideon),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(80.dp),
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(start = 8.dp)
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(title, style = Typography.headlineMedium)
+                    Text(dueDate, style = Typography.bodyMedium)
+                    LibraryBookTypePill(isPhysical)
                 }
             }
         }
@@ -226,55 +235,113 @@ fun HoldBookCard(
     title: String,
     status: String,
     @DrawableRes cover: Int,
+    isReadyForPickup: Boolean,
     onCheckoutClicked: () -> Unit,
     onDeleteHoldClicked: () -> Unit,
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .padding(vertical = 8.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painterResource(id = R.drawable.gideon),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(80.dp),
+    DismissableRow(
+        onStartToEnd = onDeleteHoldClicked,
+        onEndToStart = onCheckoutClicked,
+        startToEndIcon = {
+            Icon(
+                tint = colorScheme.error,
+                modifier = Modifier.size(50.dp),
+                painter = painterResource(id = R.drawable.delete),
+                contentDescription = "Remove hold for $title"
             )
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .padding(start = 8.dp)
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(title, style = Typography.headlineMedium)
-                Text(status, style = Typography.bodyMedium)
-            }
-            Column {
-                IconButton(onClick = onCheckoutClicked) {
-                    Icon(
-                        modifier = Modifier.size(50.dp),
-                        painter = painterResource(id = R.drawable.done),
-                        contentDescription = "Mark $title as checked out"
-                    )
-                }
-                IconButton(onClick = onDeleteHoldClicked) {
-                    Icon(
-                        modifier = Modifier.size(50.dp),
-                        painter = painterResource(id = R.drawable.delete),
-                        contentDescription = "Remove hold for $title"
-                    )
+        },
+        endToStartIcon = {
+            Icon(
+                tint = colorScheme.primary,
+                modifier = Modifier.size(50.dp),
+                painter = painterResource(id = R.drawable.done),
+                contentDescription = "Mark $title as checked out"
+            )
+        },
+        isEndToStartEnabled = isReadyForPickup,
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .padding(vertical = 8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painterResource(id = R.drawable.gideon),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(80.dp),
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(start = 8.dp)
+                        .weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(title, style = Typography.headlineMedium)
+                    Text(status, style = Typography.bodyMedium)
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DismissableRow(
+    onStartToEnd: () -> Unit = {},
+    onEndToStart: () -> Unit = {},
+    startToEndIcon: @Composable () -> Unit,
+    endToStartIcon: @Composable () -> Unit,
+    isStartToEndEnabled: Boolean = true,
+    isEndToStartEnabled: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    val swipeToDismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            when (it) {
+                SwipeToDismissBoxValue.Settled -> false
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    onStartToEnd()
+                    true
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onEndToStart()
+                    true
+                }
+            }
+        }
+    )
+    SwipeToDismissBox(
+        state = swipeToDismissState,
+        enableDismissFromStartToEnd = isStartToEndEnabled,
+        enableDismissFromEndToStart = isEndToStartEnabled,
+        backgroundContent = {
+            Row(
+                Modifier
+                    .fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                when (swipeToDismissState.targetValue) {
+                    SwipeToDismissBoxValue.Settled -> {}
+                    SwipeToDismissBoxValue.StartToEnd -> startToEndIcon()
+
+                    SwipeToDismissBoxValue.EndToStart -> {
+                        Spacer(modifier = Modifier.weight(1f))
+                        endToStartIcon()
+                    }
+                }
+            }
+        }
+    ) {
+        content()
+    }
+}
+
 @Composable
 fun LibraryBookTypePill(isPhysical: Boolean) {
     val pillBackgroundColor = if (isSystemInDarkTheme()) {
