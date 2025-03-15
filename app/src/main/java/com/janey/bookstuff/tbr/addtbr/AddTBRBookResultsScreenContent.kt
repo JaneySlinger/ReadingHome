@@ -31,6 +31,17 @@ data class TBRBookSearchResult(
 )
 
 @Composable
+fun AddTBRBookResultsScreen(
+    onNavigateToConfirmDetails: () -> Unit,
+) {
+    AddTBRBookResultsScreenContent(
+        results = emptyList(),
+        onSelectClicked = onNavigateToConfirmDetails,
+        onEnterManuallyClicked = onNavigateToConfirmDetails,
+    )
+}
+
+@Composable
 fun AddTBRBookResultsScreenContent(
     results: List<TBRBookSearchResult>,
     onEnterManuallyClicked: () -> Unit = {},
@@ -38,7 +49,9 @@ fun AddTBRBookResultsScreenContent(
 ) {
     BaseScreen(isScrollable = false, modifier = Modifier.padding(horizontal = 8.dp)) {
         Column(
-            modifier = Modifier.weight(1f).fillMaxSize(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (results.size) {

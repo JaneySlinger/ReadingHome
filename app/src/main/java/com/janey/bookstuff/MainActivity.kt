@@ -24,26 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.janey.bookstuff.goals.GoalsScreen
-import com.janey.bookstuff.home.HomeScreen
-import com.janey.bookstuff.library.AddLibraryBookScreen
-import com.janey.bookstuff.library.LibraryScreen
-import com.janey.bookstuff.navigation.Screen
-import com.janey.bookstuff.navigation.Screen.Routes
-import com.janey.bookstuff.stats.StatsScreen
-import com.janey.bookstuff.tbr.AddFab
-import com.janey.bookstuff.tbr.TBRScreen
-import com.janey.bookstuff.tbr.addtbr.AddTBRBookScreen
-import com.janey.bookstuff.tbr.bookdetails.BookDetailsScreen
+import com.janey.bookstuff.navigation.MainGraph
+import com.janey.bookstuff.navigation.Tab
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -71,15 +57,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     Surface(modifier = Modifier.fillMaxSize()) {
-        val items = listOf(
-            Screen.Home,
-            Screen.Library,
-            Screen.TBR,
-            Screen.Stats,
-            Screen.Goals,
+        val bottomBarItems = listOf(
+            Tab.Home,
+            Tab.Library,
+            Tab.TBR,
+            Tab.Stats,
+            Tab.Goals,
         )
         val navController = rememberNavController()
-        var screenTitle by remember { mutableIntStateOf(Screen.Home.screenName) }
+        var screenTitle by remember { mutableIntStateOf(Tab.Home.title) }
         var hasFAB by remember { mutableStateOf(false) }
         var floatingActionButton: @Composable () -> Unit = {}
         Scaffold(
@@ -87,19 +73,19 @@ fun MainScreen() {
                 NavigationBar {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
-                    items.forEach { screen ->
+                    bottomBarItems.forEach { tab ->
                         NavigationBarItem(
                             icon = {
                                 Icon(
-                                    painter = painterResource(id = screen.icon!!),
+                                    painter = painterResource(id = tab.icon),
                                     contentDescription = null
                                 )
                             },
-                            label = { Text(stringResource(id = screen.screenName)) },
-                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                            label = { Text(stringResource(id = tab.title)) },
+                            selected = currentDestination?.hierarchy?.any { it.route == tab.navGraphRoute } == true,
                             onClick = {
-                                navController.navigate(screen.route) {
-                                    screenTitle = screen.screenName
+                                navController.navigate(tab.navGraphRoute) {
+                                    screenTitle = tab.title
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
@@ -118,66 +104,10 @@ fun MainScreen() {
             },
             topBar = { TopAppBar(title = { Text(text = stringResource(id = screenTitle)) }) }
         ) { innerPadding ->
-            NavHost(
+            MainGraph(
                 navController = navController,
-                startDestination = Routes.HOME.name,
                 modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(Screen.Home.route) {
-                    screenTitle = Screen.Home.screenName
-                    hasFAB = Screen.Home.hasFAB
-                    HomeScreen()
-                }
-                composable(Screen.Library.route) {
-                    screenTitle = Screen.Library.screenName
-                    hasFAB = Screen.Library.hasFAB
-                    floatingActionButton = {AddFab {navController.navigate(Screen.AddLibraryBook.route) }}
-                    LibraryScreen(onBookRemoved = {})
-                }
-                composable(Screen.TBR.route) {
-                    screenTitle = Screen.TBR.screenName
-                    hasFAB = Screen.TBR.hasFAB
-                    floatingActionButton = { AddFab { navController.navigate(Screen.AddTBRBook.route) } }
-                    ProvideAnimatedContentScope {
-                        TBRScreen(
-                            hiltViewModel(),
-                            onBookClicked = { navController.navigate("${Routes.TBR_DETAIL.name}/${it.title}") }
-                        )
-                    }
-                }
-                composable(Screen.Stats.route) {
-                    screenTitle = Screen.Stats.screenName
-                    hasFAB = Screen.Stats.hasFAB
-                    StatsScreen()
-                }
-                composable(Screen.Goals.route) {
-                    screenTitle = Screen.Goals.screenName
-                    hasFAB = Screen.Goals.hasFAB
-                    GoalsScreen()
-                }
-                composable(Screen.AddTBRBook.route) {
-                    screenTitle = Screen.AddTBRBook.screenName
-                    hasFAB = Screen.AddTBRBook.hasFAB
-                    AddTBRBookScreen(
-                        viewModel = hiltViewModel()
-                    )
-                }
-                composable(
-                    route = Screen.TBRDetail.route,
-                    arguments = listOf(navArgument("title") { type = NavType.StringType })
-                ) {
-                    screenTitle = Screen.TBRDetail.screenName
-                    hasFAB = Screen.TBRDetail.hasFAB
-                    ProvideAnimatedContentScope {
-                        BookDetailsScreen()
-                    }
-                }
-                composable(Screen.AddLibraryBook.route) {
-                    screenTitle = Screen.AddLibraryBook.screenName
-                    hasFAB = Screen.AddLibraryBook.hasFAB
-                    AddLibraryBookScreen()
-                }
-            }
+            )
         }
     }
 }

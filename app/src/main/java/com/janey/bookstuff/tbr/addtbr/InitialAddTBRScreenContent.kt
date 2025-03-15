@@ -13,11 +13,20 @@ import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 
 @Composable
+fun InitialAddTBRScreen(
+    onContinueClicked: () -> Unit
+) {
+    InitialAddTBRScreenContent(
+        onContinueClicked = onContinueClicked
+    ) {}
+}
+
+@Composable
 fun InitialAddTBRScreenContent(
     title: String = "",
     author: String = "",
+    onContinueClicked: () -> Unit = {},
     listener: (AddTBRBookEvent) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     BaseScreen(isScrollable = false) {
         Column {
@@ -62,7 +71,6 @@ private fun InitialAddTBRScreenPreview() {
         InitialAddTBRScreenContent(
             title = "",
             author = "",
-            listener = {}
-        )
+        ) {}
     }
 }
