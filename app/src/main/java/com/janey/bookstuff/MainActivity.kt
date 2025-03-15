@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -34,17 +35,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.janey.bookstuff.goals.GoalsScreen
 import com.janey.bookstuff.home.HomeScreen
+import com.janey.bookstuff.library.AddLibraryBookScreen
 import com.janey.bookstuff.library.LibraryScreen
 import com.janey.bookstuff.navigation.Screen
 import com.janey.bookstuff.navigation.Screen.Routes
 import com.janey.bookstuff.stats.StatsScreen
+import com.janey.bookstuff.tbr.AddFab
 import com.janey.bookstuff.tbr.TBRScreen
-import com.janey.bookstuff.tbr.TBRScreenFAB
 import com.janey.bookstuff.tbr.addtbr.AddTBRBookScreen
 import com.janey.bookstuff.tbr.bookdetails.BookDetailsScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,7 +120,7 @@ fun MainScreen() {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = Screen.Routes.HOME.name,
+                startDestination = Routes.HOME.name,
                 modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screen.Home.route) {
@@ -128,14 +131,16 @@ fun MainScreen() {
                 composable(Screen.Library.route) {
                     screenTitle = Screen.Library.screenName
                     hasFAB = Screen.Library.hasFAB
-                    LibraryScreen()
+                    floatingActionButton = {AddFab {navController.navigate(Screen.AddLibraryBook.route) }}
+                    LibraryScreen(onBookRemoved = {})
                 }
                 composable(Screen.TBR.route) {
                     screenTitle = Screen.TBR.screenName
                     hasFAB = Screen.TBR.hasFAB
-                    floatingActionButton = { TBRScreenFAB { navController.navigate(Screen.AddTBRBook.route) } }
+                    floatingActionButton = { AddFab { navController.navigate(Screen.AddTBRBook.route) } }
                     ProvideAnimatedContentScope {
                         TBRScreen(
+                            hiltViewModel(),
                             onBookClicked = { navController.navigate("${Routes.TBR_DETAIL.name}/${it.title}") }
                         )
                     }
@@ -153,7 +158,9 @@ fun MainScreen() {
                 composable(Screen.AddTBRBook.route) {
                     screenTitle = Screen.AddTBRBook.screenName
                     hasFAB = Screen.AddTBRBook.hasFAB
-                    AddTBRBookScreen {}
+                    AddTBRBookScreen(
+                        viewModel = hiltViewModel()
+                    )
                 }
                 composable(
                     route = Screen.TBRDetail.route,
@@ -164,6 +171,11 @@ fun MainScreen() {
                     ProvideAnimatedContentScope {
                         BookDetailsScreen()
                     }
+                }
+                composable(Screen.AddLibraryBook.route) {
+                    screenTitle = Screen.AddLibraryBook.screenName
+                    hasFAB = Screen.AddLibraryBook.hasFAB
+                    AddLibraryBookScreen()
                 }
             }
         }

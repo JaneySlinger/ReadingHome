@@ -17,4 +17,7 @@ data class TBRBookEntity(
     @ColumnInfo(name = "genres") val genres: List<String> = emptyList(),
     @ColumnInfo(name = "release_date") val releaseDate: Date? = null,
     @ColumnInfo(name= "is_released") val isReleased: Boolean = true,
+    @ColumnInfo(name="reason_for_interest") val reasonForInterest : String = "",
+    @ColumnInfo(name="pages") val pages: Int = 0,
+    @ColumnInfo(name="date_added") val dateAdded: Date = Date(),
 )

@@ -38,13 +38,27 @@ import com.janey.bookstuff.tbr.Genre
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTBRBookScreen(
     viewModel: AddTBRBookViewModel = viewModel(),
-    listener: (AddTBRBookEvent) -> Unit,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
+    AddTBRBookScreenContent(
+        title = state.value.title,
+        author = state.value.author,
+        reason = state.value.reason,
+        listener = viewModel::handleEvent
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddTBRBookScreenContent(
+    title: String,
+    author: String,
+    reason: String,
+    listener: (AddTBRBookEvent) -> Unit,
+) {
     var isReleased by remember { mutableStateOf(true) }
     BaseScreen {
         Row(
@@ -62,13 +76,13 @@ fun AddTBRBookScreen(
             Column {
                 TextField(
                     label = { Text("Title") },
-                    value = state.value.title,
+                    value = title,
                     onValueChange = { listener(AddTBRBookEvent.TitleChanged(it)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 TextField(
                     label = { Text("Author") },
-                    value = state.value.author,
+                    value = author,
                     onValueChange = { listener(AddTBRBookEvent.AuthorChanged(it)) },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -88,7 +102,7 @@ fun AddTBRBookScreen(
         )
         TextField(
             label = { Text("Why do you want to read it?") },
-            value = state.value.reason,
+            value = reason,
             onValueChange = { listener(AddTBRBookEvent.ReasonChanged(it)) },
             singleLine = false,
             modifier = Modifier.fillMaxWidth()
@@ -110,7 +124,7 @@ fun AddTBRBookScreen(
             )
         }
         Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-            Button(onClick = { listener(AddTBRBookEvent.SubmitClicked) }) {
+            Button(onClick = { listener(AddTBRBookEvent.SubmitClicked(isReleased)) }) {
                 Text("Add to TBR")
             }
         }
@@ -145,7 +159,10 @@ fun GenreFilterChips(
 @Composable
 fun AddTBRBookScreenPreview() {
     BookStuffTheme {
-        AddTBRBookScreen(
+        AddTBRBookScreenContent(
+            title = "",
+            author = "",
+            reason = "",
             listener = {}
         )
     }

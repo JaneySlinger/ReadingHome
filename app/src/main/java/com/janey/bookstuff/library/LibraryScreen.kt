@@ -42,6 +42,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
@@ -49,15 +51,21 @@ import com.janey.bookstuff.ui.theme.Typography
 import java.time.LocalDate
 
 @Composable
-fun LibraryScreen() {
+fun LibraryScreen(
+    viewModel: LibraryViewModel = viewModel(),
+    onBookRemoved: (String) -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val currentCheckouts by viewModel.currentCheckouts.collectAsStateWithLifecycle(emptyList())
+    val currentHolds by viewModel.currentHolds.collectAsStateWithLifecycle(emptyList())
     BaseScreen {
-        CurrentCheckouts()
-        LibraryHolds()
+        CurrentCheckouts(currentCheckouts)
+        LibraryHolds(currentHolds)
     }
 }
 
 @Composable
-fun LibraryHolds() {
+fun LibraryHolds(holds: List<String>) {
     Text("Physical Holds", style = Typography.headlineMedium)
     HoldBookCard(
         bookId = 1,
@@ -80,7 +88,7 @@ fun LibraryHolds() {
 }
 
 @Composable
-fun CurrentCheckouts() {
+fun CurrentCheckouts(checkouts: List<String>) {
     Text("Current Checkouts", style = Typography.headlineMedium)
     FilterRow()
     CheckedOutLibraryBookCard(
@@ -399,7 +407,7 @@ fun LibraryRenewalPopup() {
 @Composable
 fun LibraryScreenPreview() {
     BookStuffTheme {
-        LibraryScreen()
+        LibraryScreen() {}
     }
 }
 

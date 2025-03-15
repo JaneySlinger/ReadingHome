@@ -7,23 +7,24 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.janey.bookstuff.database.entities.TBRBookEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TBRBookDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBook(book: TBRBookEntity)
+    fun insertBook(book: TBRBookEntity)
 
     @Update
-    suspend fun updateBook(book: TBRBookEntity)
+    fun updateBook(book: TBRBookEntity)
 
     @Delete
-    suspend fun deleteBook(book: TBRBookEntity)
+    fun deleteBook(book: TBRBookEntity)
 
     @Query("SELECT * FROM tbr_books")
-    suspend fun getAllBooks(): List<TBRBookEntity>
+    fun getAllBooks(): Flow<List<TBRBookEntity>>
 
     @Query("SELECT * FROM tbr_books WHERE id = :id")
-    suspend fun getBookById(id: Int): TBRBookEntity?
+    fun getBookById(id: Int): Flow<TBRBookEntity?>
 
 }

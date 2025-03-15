@@ -86,6 +86,9 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.48")
 
     implementation("com.google.code.gson:gson:2.10.1")
+
+    // coil image loading
+    implementation("io.coil-kt:coil-compose:2.7.0")
 }
 
 kapt {

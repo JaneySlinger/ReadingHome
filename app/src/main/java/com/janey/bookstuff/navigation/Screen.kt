@@ -19,7 +19,8 @@ sealed class Screen(
     data object Library : Screen(
         route = Routes.LIBRARY.name,
         screenName = R.string.library,
-        icon = R.drawable.library_books
+        icon = R.drawable.library_books,
+        hasFAB = true,
     )
 
     data object TBR : Screen(
@@ -46,6 +47,11 @@ sealed class Screen(
         screenName = R.string.add_tbr,
     )
 
+    data object AddLibraryBook : Screen(
+        route = Routes.ADD_LIBRARY.name,
+        screenName = R.string.add_library,
+    )
+
     data object TBRDetail : Screen(
         route = "${Routes.TBR_DETAIL.name}/{title}",
         screenName = R.string.tbr_detail,
@@ -60,5 +66,6 @@ sealed class Screen(
         GOALS,
         ADD_TBR,
         TBR_DETAIL,
+        ADD_LIBRARY,
     }
 }

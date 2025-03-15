@@ -26,6 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -42,9 +43,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import com.janey.bookstuff.R
 import com.janey.bookstuff.WithAnimatedContentScope
 import com.janey.bookstuff.tbr.addtbr.GenreFilterChips
 import com.janey.bookstuff.ui.components.BaseScreen
+import com.janey.bookstuff.ui.components.BookImage
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 import com.janey.bookstuff.ui.theme.Typography
 
@@ -64,26 +66,59 @@ fun TBRScreen(
     onBookClicked: (TBRBook) -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    BaseScreen {
-        TBRGrid(
-            books = state.filteredBooks,
-            sortType = state.sortType,
-            onSortTypeSelected = { viewModel.handleEvent(TBREvent.SortChanged(it)) },
-            onGenreSelected = { genre, selected ->
-                viewModel.handleEvent(
-                    TBREvent.FilterChanged(
-                        genre, selected
-                    )
+    TBRScreenContent(
+        isLoading = state.isLoading,
+        books = state.filteredBooks,
+        sortType = state.sortType,
+        onSortTypeSelected = { viewModel.handleEvent(TBREvent.SortChanged(it)) },
+        onGenreSelected = { genre, selected ->
+            viewModel.handleEvent(
+                TBREvent.FilterChanged(
+                    genre, selected
                 )
-            },
-            onBookClicked = onBookClicked,
-        )
-    }
-
+            )
+        },
+        onBookClicked = onBookClicked,
+    )
 }
 
 @Composable
-fun TBRScreenFAB(onClick: () -> Unit = {}) {
+fun TBRScreenContent(
+    isLoading: Boolean,
+    books: List<TBRBook>,
+    onGenreSelected: (Genre, Boolean) -> Unit,
+    sortType: SortType,
+    onSortTypeSelected: (SortType) -> Unit,
+    onBookClicked: (TBRBook) -> Unit,
+) {
+    BaseScreen {
+        if (isLoading) {
+            LoadingScreen()
+        } else {
+            TBRGrid(
+                books = books,
+                sortType = sortType,
+                onSortTypeSelected = onSortTypeSelected,
+                onGenreSelected = onGenreSelected,
+                onBookClicked = onBookClicked,
+            )
+        }
+    }
+}
+
+@Composable
+fun LoadingScreen(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+fun AddFab(onClick: () -> Unit = {}) {
     FloatingActionButton(
         onClick = onClick,
     ) {
@@ -214,7 +249,8 @@ fun TBRGrid(
                         ) {
                             items(books) { book ->
                                 BookImage(
-                                    book = book,
+                                    url = book.imageUrl,
+                                    height = 150.dp,
                                     modifier = Modifier
                                         .clickable { onBookClicked(book) }
                                         .sharedElement(
@@ -224,6 +260,7 @@ fun TBRGrid(
                                 )
                             }
                         }
+
                         LayoutOptions.LIST -> TBRListLayout(
                             books = books,
                             onBookClicked = onBookClicked,
@@ -253,7 +290,10 @@ private fun TBRListLayout(
                             sharedTransitionScope.rememberSharedContentState(key = book.title),
                             animatedVisibilityScope = this@WithAnimatedContentScope,
                         )) {
-                        BookImage(book)
+                        BookImage(
+                            url = book.imageUrl,
+                            height = 150.dp
+                        )
                         Column(modifier = Modifier.padding(start = 4.dp)) {
                             Text(text = book.title, style = Typography.headlineSmall)
                             Text(text = book.author, style = Typography.bodyMedium)
@@ -283,35 +323,18 @@ private fun TBRListLayout(
     }
 }
 
-@Composable
-private fun BookImage(
-    book: TBRBook, modifier: Modifier = Modifier
-) {
-    Image(
-        painterResource(id = book.image),
-        contentDescription = null,
-        contentScale = ContentScale.FillHeight,
-        modifier = modifier
-            .padding(2.dp)
-            .height(150.dp)
-            .clip(shape = RoundedCornerShape(4.dp))
-    )
-}
-
-
 @PreviewLightDark
 @Composable
 fun TBRScreenPreview() {
     BookStuffTheme {
-        TBRScreen() {}
-    }
-}
-
-@PreviewLightDark
-@Composable
-fun TBRScreenFABPreview() {
-    BookStuffTheme {
-        TBRScreenFAB()
+        TBRScreenContent(
+            isLoading = false,
+            books = previewBooks,
+            sortType = SortType.DATE_ADDED,
+            onSortTypeSelected = {},
+            onGenreSelected = { _, _ -> },
+            onBookClicked = {}
+        )
     }
 }
 
@@ -319,13 +342,38 @@ fun TBRScreenFABPreview() {
 @Composable
 fun TBRListPreview() {
     BookStuffTheme {
-        TBRListLayout(
+        BaseScreen {
+            TBRListLayout(
+                books = previewBooks,
+                onBookClicked = {}
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+fun LoadingScreenPreview() {
+    BookStuffTheme {
+        TBRScreenContent(
+            isLoading = true,
             books = previewBooks,
+            sortType = SortType.DATE_ADDED,
+            onSortTypeSelected = {},
+            onGenreSelected = { _, _ -> },
             onBookClicked = {}
         )
     }
 }
 
+
+@PreviewLightDark
+@Composable
+fun TBRScreenFABPreview() {
+    BookStuffTheme {
+        AddFab()
+    }
+}
 
 val previewBooks = listOf(
     TBRBook(
@@ -333,34 +381,34 @@ val previewBooks = listOf(
         author = "Tamsyn Muir",
         pages = 410,
         genres = setOf(Genre.SCI_FI),
-        image = R.drawable.gideon
+        imageUrl = ""
     ),
     TBRBook(
         title = "My Roommate is a Vampire",
         author = "Jenna Levine",
         pages = 360,
         genres = setOf(Genre.ROMANCE, Genre.FANTASY),
-        image = R.drawable.vampire
+        imageUrl = ""
     ),
     TBRBook(
         title = "The Two Towers",
         author = "J. R. R. Tolkien",
         pages = 350,
         genres = setOf(Genre.FANTASY),
-        image = R.drawable.two_towers
+        imageUrl = ""
     ),
     TBRBook(
         title = "When Among Crows",
         author = "Veronica Roth",
         pages = 176,
         genres = setOf(Genre.FANTASY),
-        image = R.drawable.crows
+        imageUrl = ""
     ),
     TBRBook(
         title = "The Stars Too Fondly",
         author = "Emily Hamilton",
         pages = 336,
         genres = setOf(Genre.SCI_FI, Genre.ROMANCE),
-        image = R.drawable.stars_fondly
+        imageUrl = ""
     ),
 )
