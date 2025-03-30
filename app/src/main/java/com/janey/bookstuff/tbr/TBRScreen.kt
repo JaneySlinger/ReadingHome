@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,26 +65,38 @@ import com.janey.bookstuff.ui.theme.Typography
 fun TBRScreen(
     viewModel: TBRViewModel = viewModel(),
     onBookClicked: (TBRBook) -> Unit,
+    onAddBookClicked: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    TBRScreenContent(
-        isLoading = state.isLoading,
-        books = state.filteredBooks,
-        sortType = state.sortType,
-        onSortTypeSelected = { viewModel.handleEvent(TBREvent.SortChanged(it)) },
-        onGenreSelected = { genre, selected ->
-            viewModel.handleEvent(
-                TBREvent.FilterChanged(
-                    genre, selected
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onAddBookClicked() }
+            ) { Icon(Icons.Filled.Add, null)}
+        }
+    ){ padding ->
+        TBRScreenContent(
+            modifier = Modifier.padding(padding),
+            isLoading = state.isLoading,
+            books = state.filteredBooks,
+            sortType = state.sortType,
+            onSortTypeSelected = { viewModel.handleEvent(TBREvent.SortChanged(it)) },
+            onGenreSelected = { genre, selected ->
+                viewModel.handleEvent(
+                    TBREvent.FilterChanged(
+                        genre, selected
+                    )
                 )
-            )
-        },
-        onBookClicked = onBookClicked,
-    )
+            },
+            onBookClicked = onBookClicked,
+        )
+    }
+
 }
 
 @Composable
 fun TBRScreenContent(
+    modifier: Modifier = Modifier,
     isLoading: Boolean,
     books: List<TBRBook>,
     onGenreSelected: (Genre, Boolean) -> Unit,

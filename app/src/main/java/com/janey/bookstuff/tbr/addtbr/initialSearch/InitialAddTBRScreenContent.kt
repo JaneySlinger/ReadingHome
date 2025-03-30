@@ -1,4 +1,4 @@
-package com.janey.bookstuff.tbr.addtbr
+package com.janey.bookstuff.tbr.addtbr.initialSearch
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,54 +9,61 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
 
 @Composable
 fun InitialAddTBRScreen(
-    onContinueClicked: () -> Unit
+    viewModel: InitialAddTBRViewModel = viewModel(),
+    onQuickAddClicked: () -> Unit,
+    onContinueClicked: (title: String, author: String) -> Unit
 ) {
+    val state = viewModel.state.collectAsStateWithLifecycle()
     InitialAddTBRScreenContent(
+        title = state.value.title,
+        author = state.value.author,
+        onTitleChanged = { viewModel.onTitleChanged(it) },
+        onAuthorChanged = { viewModel.onAuthorChanged(it) },
+        onQuickAddClicked = onQuickAddClicked,
         onContinueClicked = onContinueClicked
-    ) {}
+    )
 }
 
 @Composable
 fun InitialAddTBRScreenContent(
     title: String = "",
     author: String = "",
-    onContinueClicked: () -> Unit = {},
-    listener: (AddTBRBookEvent) -> Unit,
+    onTitleChanged: (String) -> Unit = {},
+    onAuthorChanged: (String) -> Unit = {},
+    onQuickAddClicked: () -> Unit = {},
+    onContinueClicked: (title: String, author: String) -> Unit = { _, _ -> },
 ) {
     BaseScreen(isScrollable = false) {
         Column {
             TextField(
                 label = { Text("Title") },
                 value = title,
-                onValueChange = { listener(AddTBRBookEvent.TitleChanged(it)) },
+                onValueChange = { onTitleChanged(it) },
                 modifier = Modifier.fillMaxWidth()
             )
             TextField(
                 label = { Text("Author") },
                 value = author,
-                onValueChange = { listener(AddTBRBookEvent.AuthorChanged(it)) },
+                onValueChange = { onAuthorChanged(it) },
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    listener(
-                        AddTBRBookEvent.SubmitClicked(
-                            isReleased = false
-                        )
-                    )
-                }) {
+                onClick = { onQuickAddClicked() }
+            ) {
                 Text("Quick Add")
             }
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { TODO() })
+                onClick = { onContinueClicked(title, author) })
             {
                 Text("Continue")
             }
@@ -71,6 +78,8 @@ private fun InitialAddTBRScreenPreview() {
         InitialAddTBRScreenContent(
             title = "",
             author = "",
-        ) {}
+            onQuickAddClicked = {},
+            onContinueClicked = { _, _ -> }
+        )
     }
 }

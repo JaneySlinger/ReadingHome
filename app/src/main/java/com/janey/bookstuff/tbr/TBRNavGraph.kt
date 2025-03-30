@@ -9,12 +9,11 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.janey.bookstuff.ProvideAnimatedContentScope
 import com.janey.bookstuff.navigation.Graphs
-import com.janey.bookstuff.tbr.addtbr.AddTBRBookResultsScreen
-import com.janey.bookstuff.tbr.addtbr.InitialAddTBRScreen
+import com.janey.bookstuff.tbr.addtbr.initialSearch.InitialAddTBRScreen
+import com.janey.bookstuff.tbr.addtbr.results.AddTBRBookResultsScreen
 import com.janey.bookstuff.tbr.bookdetails.BookDetailsScreen
 
 fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
-    // TODO janey - handle screen titles and FAB for adding book
     navigation(
         route = Graphs.TBR_GRAPH.name,
         startDestination = TBRRoutes.TBR_BOOKS.route,
@@ -23,6 +22,7 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
             ProvideAnimatedContentScope {
                 TBRScreen(
                     hiltViewModel(),
+                    onAddBookClicked = { navController.navigate(TBRRoutes.TBR_ADD.name) },
                     onBookClicked = { navController.navigate("${TBRRoutes.TBR_DETAIL.name}/${it.title}") }
                 )
             }
@@ -39,12 +39,25 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
 
         composable(route = TBRRoutes.TBR_ADD.route) {
             InitialAddTBRScreen(
-                onContinueClicked = { navController.navigate(TBRRoutes.TBR_ADD_DETAIL.route) }
+                viewModel = hiltViewModel(),
+                onQuickAddClicked = { /* TODO Janey */ },
+                onContinueClicked = { title, author ->
+                    navController.navigate(
+                        route = "${TBRRoutes.TBR_ADD_DETAIL.name}/${title}&${author}"
+                    )
+                }
             )
         }
 
-        composable(route = TBRRoutes.TBR_ADD_DETAIL.route) {
+        composable(
+            route = TBRRoutes.TBR_ADD_DETAIL.route,
+            arguments = listOf(
+                navArgument("title") { type = NavType.StringType },
+                navArgument("author") { type = NavType.StringType }
+            )
+        ) {
             AddTBRBookResultsScreen(
+                viewModel = hiltViewModel(),
                 onNavigateToConfirmDetails = { navController.navigate(TBRRoutes.TBR_DETAIL.route) }
             )
         }
@@ -62,6 +75,6 @@ enum class TBRRoutes(val route: String) {
         route = "${TBR_DETAIL.name}/{title}",
     ),
     TBR_ADD_DETAIL(
-        route = TBR_ADD_DETAIL.name,
+        route = "${TBR_ADD_DETAIL.name}/{title}&{author}",
     )
 }
