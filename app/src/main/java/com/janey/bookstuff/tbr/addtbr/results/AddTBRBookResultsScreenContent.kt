@@ -121,7 +121,7 @@ fun MultipleResults(
 @Composable
 fun BookResultComponent(
     coverUrl: String,
-    pageCount: Int,
+    pageCount: Int?,
     onSelectClicked: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -136,7 +136,7 @@ fun BookResultComponent(
                 url = coverUrl,
                 height = 300.dp
             )
-            Text("$pageCount pages")
+            Text("${pageCount ?: "Unknown"} pages")
             Button(
                 onClick = onSelectClicked,
                 modifier = Modifier.fillMaxWidth()

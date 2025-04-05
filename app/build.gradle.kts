@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,6 +11,9 @@ plugins {
 android {
     namespace = "com.janey.bookstuff"
     compileSdk = 34
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.janey.bookstuff"
@@ -21,6 +26,15 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Get the API key from apiKey.properties
+        val properties = Properties().apply {
+            file("../apiKey.properties").inputStream().use { fis ->
+                load(fis)
+            }
+        }
+
+        buildConfigField(type = "String", name="GOOGLE_BOOKS_API_KEY", value = properties["GOOGLE_BOOKS_API_KEY"] as String)
     }
 
     buildTypes {
@@ -89,6 +103,12 @@ dependencies {
 
     // coil image loading
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+
+    // Retrofit and Moshi
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 }
 
 kapt {
