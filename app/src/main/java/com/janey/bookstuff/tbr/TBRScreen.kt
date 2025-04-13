@@ -63,7 +63,7 @@ import com.janey.bookstuff.ui.theme.Typography
 @Composable
 fun TBRScreen(
     viewModel: TBRViewModel = viewModel(),
-    onBookClicked: (TBRBook) -> Unit,
+    onBookClicked: (id: Long) -> Unit,
     onAddBookClicked: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -101,7 +101,7 @@ fun TBRScreenContent(
     onGenreSelected: (Genre, Boolean) -> Unit,
     sortType: SortType,
     onSortTypeSelected: (SortType) -> Unit,
-    onBookClicked: (TBRBook) -> Unit,
+    onBookClicked: (id: Long) -> Unit,
 ) {
     BaseScreen {
         if (isLoading) {
@@ -223,7 +223,7 @@ fun TBRGrid(
     onGenreSelected: (Genre, Boolean) -> Unit,
     sortType: SortType,
     onSortTypeSelected: (SortType) -> Unit,
-    onBookClicked: (TBRBook) -> Unit,
+    onBookClicked: (id: Long) -> Unit,
 ) {
     var layoutOption by remember { mutableStateOf(LayoutOptions.GRID) }
     val sharedTransitionScope = LocalSharedTransitionScope.current
@@ -253,9 +253,9 @@ fun TBRGrid(
                                     url = book.imageUrl,
                                     height = 150.dp,
                                     modifier = Modifier
-                                        .clickable { onBookClicked(book) }
+                                        .clickable { onBookClicked(book.id) }
                                         .sharedElement(
-                                            sharedTransitionScope.rememberSharedContentState(key = book.title),
+                                            sharedTransitionScope.rememberSharedContentState(key = book.id),
                                             animatedVisibilityScope = this@WithAnimatedContentScope,
                                         )
                                 )
@@ -277,7 +277,7 @@ fun TBRGrid(
 @Composable
 private fun TBRListLayout(
     books: List<TBRBook>,
-    onBookClicked: (TBRBook) -> Unit,
+    onBookClicked: (id: Long) -> Unit,
 ) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     with(sharedTransitionScope) {
@@ -285,10 +285,10 @@ private fun TBRListLayout(
             LazyColumn(modifier = Modifier.height(600.dp)) {
                 items(books) { book ->
                     Row(modifier = Modifier
-                        .clickable { onBookClicked(book) }
+                        .clickable { onBookClicked(book.id) }
                         .fillMaxWidth()
                         .sharedElement(
-                            sharedTransitionScope.rememberSharedContentState(key = book.title),
+                            sharedTransitionScope.rememberSharedContentState(key = book.id),
                             animatedVisibilityScope = this@WithAnimatedContentScope,
                         )) {
                         BookImage(
@@ -378,6 +378,7 @@ fun TBRScreenFABPreview() {
 
 val previewBooks = listOf(
     TBRBook(
+        id = 0,
         title = "Gideon the Ninth",
         author = "Tamsyn Muir",
         pages = 410,
@@ -385,6 +386,7 @@ val previewBooks = listOf(
         imageUrl = ""
     ),
     TBRBook(
+        id = 1,
         title = "My Roommate is a Vampire",
         author = "Jenna Levine",
         pages = 360,
@@ -392,6 +394,7 @@ val previewBooks = listOf(
         imageUrl = ""
     ),
     TBRBook(
+        id = 2,
         title = "The Two Towers",
         author = "J. R. R. Tolkien",
         pages = 350,
@@ -399,6 +402,7 @@ val previewBooks = listOf(
         imageUrl = ""
     ),
     TBRBook(
+        id = 3,
         title = "When Among Crows",
         author = "Veronica Roth",
         pages = 176,
@@ -406,6 +410,7 @@ val previewBooks = listOf(
         imageUrl = ""
     ),
     TBRBook(
+        id = 4,
         title = "The Stars Too Fondly",
         author = "Emily Hamilton",
         pages = 336,

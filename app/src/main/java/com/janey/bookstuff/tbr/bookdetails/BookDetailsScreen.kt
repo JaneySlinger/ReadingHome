@@ -72,7 +72,7 @@ fun BookDetailsScreenContent(
                         url = book.imageUrl ?: "",
                         modifier = Modifier
                             .sharedElement(
-                                sharedTransitionScope.rememberSharedContentState(key = book.title),
+                                sharedTransitionScope.rememberSharedContentState(key = book.id),
                                 animatedVisibilityScope = this@WithAnimatedContentScope,
                             )
                     )
@@ -135,6 +135,7 @@ private fun BookDetailsScreenPreview() {
     BookStuffTheme {
         BookDetailsScreenContent(
             TBRBook(
+                id = 1,
                 title = "Gideon the Ninth",
                 author = "Tamsyn Muir",
                 imageUrl = "",

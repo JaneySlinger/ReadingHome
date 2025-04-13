@@ -77,6 +77,7 @@ class TBRViewModel @Inject constructor(
 }
 
 fun TBRBookEntity.toTBRBook(): TBRBook = TBRBook(
+    id = id,
     title = title,
     author = author,
     pages = pages,
@@ -91,6 +92,7 @@ private fun List<String>.toGenreSet(): Set<Genre> = map { Genre.valueOf(it) }.to
 
 // TODO should this be shared between different screens?
 data class TBRBook(
+    val id: Long,
     val title: String,
     val author: String,
     val pages: Int,

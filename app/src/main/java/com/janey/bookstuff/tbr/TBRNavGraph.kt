@@ -23,7 +23,9 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
                 TBRScreen(
                     hiltViewModel(),
                     onAddBookClicked = { navController.navigate(TBRRoutes.TBR_ADD.name) },
-                    onBookClicked = { navController.navigate("${TBRRoutes.TBR_DETAIL.name}/${it.title}") }
+                    onBookClicked = { selectedBookId ->
+                        navController.navigate("${TBRRoutes.TBR_DETAIL.name}/$selectedBookId")
+                    }
                 )
             }
         }
