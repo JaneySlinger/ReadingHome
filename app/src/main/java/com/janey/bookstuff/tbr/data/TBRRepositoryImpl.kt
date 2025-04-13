@@ -13,4 +13,6 @@ class TBRRepositoryImpl @Inject constructor(
     override suspend fun getBookById(id: Long): Flow<TBRBookEntity?> = tbrBookDao.getBookById(id)
 
     override suspend fun insertBook(book: TBRBookEntity): Long = tbrBookDao.insertBook(book)
+
+    override suspend fun updateBook(book: TBRBookEntity) = tbrBookDao.updateBook(book)
 }

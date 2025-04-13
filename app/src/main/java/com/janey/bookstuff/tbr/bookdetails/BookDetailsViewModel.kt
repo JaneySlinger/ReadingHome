@@ -3,6 +3,7 @@ package com.janey.bookstuff.tbr.bookdetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.janey.bookstuff.database.entities.TBRBookEntity
 import com.janey.bookstuff.tbr.TBRBook
 import com.janey.bookstuff.tbr.data.TBRRepository
 import com.janey.bookstuff.tbr.toTBRBook
@@ -22,8 +23,8 @@ data class BookDetailsState(
 @HiltViewModel
 class BookDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    tbrRepository: TBRRepository,
-    dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val tbrRepository: TBRRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ): ViewModel() {
     private val bookId: Long? = savedStateHandle.get<Long>("id")
 
@@ -37,6 +38,34 @@ class BookDetailsViewModel @Inject constructor(
                         state.update { state -> state.copy(isLoading = false, book = it.toTBRBook()) }
                     }
                 }
+            }
+        }
+    }
+
+    fun updateDescription(description: String) {
+        state.update { state -> state.copy(
+            book = state.book?.copy(description = description)
+        ) }
+    }
+
+    fun saveChanges() {
+        viewModelScope.launch(dispatcher) {
+            state.value.book?.let {
+                tbrRepository.updateBook(
+                    TBRBookEntity(
+                        id = state.value.book!!.id,
+                        title = state.value.book!!.title,
+                        author = state.value.book!!.author,
+                        imageUrl = state.value.book!!.imageUrl,
+                        genres = state.value.book!!.genres.map { it.title }, // TODO janey
+                        releaseDate = state.value.book!!.releaseDate,
+                        isReleased = true, // TODO janey
+                        reasonForInterest = "", // TODO janey
+                        pages = state.value.book!!.pages,
+                        dateAdded = state.value.book!!.dateAdded,
+                        description = state.value.book!!.description
+                    )
+                )
             }
         }
     }

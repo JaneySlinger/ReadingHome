@@ -22,6 +22,5 @@ data class TBRBookEntity(
     @ColumnInfo(name = "reason_for_interest") val reasonForInterest: String = "",
     @ColumnInfo(name = "pages") val pages: Int = 0,
     @ColumnInfo(name = "date_added") val dateAdded: Date = Date(),
-    // TODO janey update this
-//    @ColumnInfo(name="description") val description: String? = null
+    @ColumnInfo(name="description") val description: String? = null
 )

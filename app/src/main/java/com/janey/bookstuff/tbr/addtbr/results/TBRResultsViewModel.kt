@@ -74,7 +74,7 @@ class TBRResultsViewModel @Inject constructor(
                     reasonForInterest = book.reasonsToRead ?: "",
                     pages = book.pageCount ?: 0,
                     dateAdded = Date(),
-//                    description = book.description
+                    description = book.description
                 )
             )
             state.update { state -> state.copy(selectedBookId = savedId, canNavigateForwards = true) }

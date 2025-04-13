@@ -2,13 +2,11 @@ package com.janey.bookstuff.tbr
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.janey.bookstuff.database.entities.TBRBookEntity
 import com.janey.bookstuff.tbr.domain.GetTBRBooksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -76,32 +74,6 @@ class TBRViewModel @Inject constructor(
     }
 }
 
-fun TBRBookEntity.toTBRBook(): TBRBook = TBRBook(
-    id = id,
-    title = title,
-    author = author,
-    pages = pages,
-    genres = genres.toGenreSet(),
-    imageUrl = imageUrl,
-    releaseDate = releaseDate,
-    dateAdded = dateAdded,
-)
-
-private fun List<String>.toGenreSet(): Set<Genre> = map { Genre.valueOf(it) }.toSet()
-
-
-// TODO should this be shared between different screens?
-data class TBRBook(
-    val id: Long,
-    val title: String,
-    val author: String,
-    val pages: Int,
-    val genres: Set<Genre>,
-    val imageUrl: String,
-    val releaseDate: Date? = null,
-    val dateAdded: Date = Date(),
-)
-
 data class TBRState(
     val filteredBooks: List<TBRBook> = emptyList(),
     val sortType: SortType = SortType.DATE_ADDED,
@@ -114,16 +86,4 @@ sealed class TBREvent {
         val selectedGenre: Genre,
         val isSelected: Boolean
     ) : TBREvent()
-}
-
-// TODO janey make this a broader used enum
-enum class Genre(
-    val title: String,
-) {
-    SCI_FI("Sci-Fi"),
-    FANTASY("Fantasy"),
-    ROMANCE("Romance"),
-    NON_FICTION("Non-Fiction"),
-    CLASSIC("Classic"),
-    CONTEMPORARY("Contemporary"),
 }
