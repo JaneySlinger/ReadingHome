@@ -30,10 +30,14 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
 
         composable(
             route = TBRRoutes.TBR_DETAIL.route,
-            arguments = listOf(navArgument("title") { type = NavType.StringType })
+            arguments = listOf(navArgument("id") {
+                type = NavType.LongType
+            })
         ) {
             ProvideAnimatedContentScope {
-                BookDetailsScreen()
+                BookDetailsScreen(
+                    viewModel = hiltViewModel()
+                )
             }
         }
 
@@ -58,7 +62,11 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
         ) {
             AddTBRBookResultsScreen(
                 viewModel = hiltViewModel(),
-                onNavigateToConfirmDetails = { navController.navigate(TBRRoutes.TBR_DETAIL.route) }
+                onNavigateToConfirmDetails = { selectedBookId ->
+                    navController.navigate(
+                        route = "${TBRRoutes.TBR_DETAIL.name}/${selectedBookId}"
+                    )
+                }
             )
         }
     }
@@ -72,7 +80,7 @@ enum class TBRRoutes(val route: String) {
         route = TBR_ADD.name,
     ),
     TBR_DETAIL(
-        route = "${TBR_DETAIL.name}/{title}",
+        route = "${TBR_DETAIL.name}/{id}",
     ),
     TBR_ADD_DETAIL(
         route = "${TBR_ADD_DETAIL.name}/{title}&{author}",

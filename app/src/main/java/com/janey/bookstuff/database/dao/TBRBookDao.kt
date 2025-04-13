@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface TBRBookDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBook(book: TBRBookEntity)
+    fun insertBook(book: TBRBookEntity) : Long
 
     @Update
     fun updateBook(book: TBRBookEntity)
@@ -25,6 +25,6 @@ interface TBRBookDao {
     fun getAllBooks(): Flow<List<TBRBookEntity>>
 
     @Query("SELECT * FROM tbr_books WHERE id = :id")
-    fun getBookById(id: Int): Flow<TBRBookEntity?>
+    fun getBookById(id: Long): Flow<TBRBookEntity?>
 
 }

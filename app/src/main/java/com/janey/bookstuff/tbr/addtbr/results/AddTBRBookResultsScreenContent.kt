@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,9 +32,15 @@ import com.janey.bookstuff.ui.theme.Typography
 @Composable
 fun AddTBRBookResultsScreen(
     viewModel: TBRResultsViewModel = viewModel(),
-    onNavigateToConfirmDetails: () -> Unit,
+    onNavigateToConfirmDetails: (selectedBookId: Long?) -> Unit,
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(state.value.canNavigateForwards) {
+        if(state.value.canNavigateForwards && state.value.selectedBookId != null) {
+            onNavigateToConfirmDetails(viewModel.state.value.selectedBookId)
+            viewModel.resetNavigation()
+        }
+    }
     if (state.value.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -44,8 +51,10 @@ fun AddTBRBookResultsScreen(
     } else {
         AddTBRBookResultsScreenContent(
             results = state.value.results,
-            onSelectClicked = onNavigateToConfirmDetails,
-            onEnterManuallyClicked = onNavigateToConfirmDetails,
+            onSelectClicked = { bookSelectedIndex ->
+                viewModel.saveBook(bookSelectedIndex)
+            },
+            onEnterManuallyClicked = { TODO() },
         )
     }
 }
@@ -54,7 +63,7 @@ fun AddTBRBookResultsScreen(
 fun AddTBRBookResultsScreenContent(
     results: List<TBRBookSearchResult>,
     onEnterManuallyClicked: () -> Unit = {},
-    onSelectClicked: () -> Unit = {},
+    onSelectClicked: (Int) -> Unit = {},
 ) {
     BaseScreen(isScrollable = false, modifier = Modifier.padding(horizontal = 8.dp)) {
         Column(
@@ -72,7 +81,7 @@ fun AddTBRBookResultsScreenContent(
                 1 -> BookResultComponent(
                     coverUrl = results[0].coverUrl,
                     pageCount = results[0].pageCount,
-                    onSelectClicked = onSelectClicked,
+                    onSelectClicked = { onSelectClicked(0) },
                     modifier = Modifier.width(250.dp)
                 )
 
@@ -94,7 +103,7 @@ fun AddTBRBookResultsScreenContent(
 @Composable
 fun MultipleResults(
     results: List<TBRBookSearchResult>,
-    onSelectClicked: () -> Unit = {},
+    onSelectClicked: (Int) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -107,11 +116,11 @@ fun MultipleResults(
             verticalAlignment = Alignment.Top,
             state = pagerState,
             pageSize = PageSize.Fixed(250.dp)
-        ) {
+        ) { page ->
             BookResultComponent(
-                coverUrl = results[it].coverUrl,
-                pageCount = results[it].pageCount,
-                onSelectClicked = onSelectClicked,
+                coverUrl = results[page].coverUrl,
+                pageCount = results[page].pageCount,
+                onSelectClicked = { onSelectClicked(page) },
             )
         }
         HorizontalPagerIndicator(pagerState)

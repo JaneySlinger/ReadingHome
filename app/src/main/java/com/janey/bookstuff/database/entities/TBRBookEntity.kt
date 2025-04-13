@@ -10,14 +10,18 @@ import java.util.Date
 @TypeConverters(DatabaseConverters::class)
 @Entity(tableName = "tbr_books")
 data class TBRBookEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long = 0,
     @ColumnInfo(name = "title") val title: String = "",
     @ColumnInfo(name = "author") val author: String = "",
     @ColumnInfo(name = "image_url") val imageUrl: String = "",
     @ColumnInfo(name = "genres") val genres: List<String> = emptyList(),
     @ColumnInfo(name = "release_date") val releaseDate: Date? = null,
-    @ColumnInfo(name= "is_released") val isReleased: Boolean = true,
-    @ColumnInfo(name="reason_for_interest") val reasonForInterest : String = "",
-    @ColumnInfo(name="pages") val pages: Int = 0,
-    @ColumnInfo(name="date_added") val dateAdded: Date = Date(),
+    @ColumnInfo(name = "is_released") val isReleased: Boolean = true,
+    @ColumnInfo(name = "reason_for_interest") val reasonForInterest: String = "",
+    @ColumnInfo(name = "pages") val pages: Int = 0,
+    @ColumnInfo(name = "date_added") val dateAdded: Date = Date(),
+    // TODO janey update this
+//    @ColumnInfo(name="description") val description: String? = null
 )

@@ -1,12 +1,11 @@
-package com.janey.bookstuff.data
+package com.janey.bookstuff.network
 
 import android.util.Log
-import com.janey.bookstuff.data.entities.Book
-import com.janey.bookstuff.data.mappers.toBooks
-import com.janey.bookstuff.network.GoogleBooksApi
+import com.janey.bookstuff.network.entities.Book
+import com.janey.bookstuff.network.mappers.toBooks
 import javax.inject.Inject
 
-class GoogleBooksRepository @Inject constructor(
+class GoogleBooksRemoteDataSource @Inject constructor(
     private val googleBooksApi: GoogleBooksApi
 ) {
     /**
