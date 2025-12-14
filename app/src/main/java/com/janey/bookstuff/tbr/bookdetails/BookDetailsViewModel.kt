@@ -48,6 +48,12 @@ class BookDetailsViewModel @Inject constructor(
         ) }
     }
 
+    fun updateReasonToRead(reason: String) {
+        state.update { state -> state.copy(
+            book = state.book?.copy(reasonToRead = reason)
+        ) }
+    }
+
     fun saveChanges() {
         viewModelScope.launch(dispatcher) {
             state.value.book?.let {
@@ -60,7 +66,7 @@ class BookDetailsViewModel @Inject constructor(
                         genres = state.value.book!!.genres.map { it.title }, // TODO janey
                         releaseDate = state.value.book!!.releaseDate,
                         isReleased = true, // TODO janey
-                        reasonForInterest = "", // TODO janey
+                        reasonForInterest = state.value.book!!.reasonToRead ?: "",
                         pages = state.value.book!!.pages,
                         dateAdded = state.value.book!!.dateAdded,
                         description = state.value.book!!.description

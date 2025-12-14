@@ -14,10 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -31,15 +27,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.janey.bookstuff.tbr.SortType
+import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
 
 @Composable
 fun StatsScreen() {
@@ -86,8 +81,8 @@ fun StatsDateRangePicker(modifier: Modifier = Modifier) {
         Box(modifier = modifier) {
             InputChip(selected = false,
                 onClick = { filterExpanded = true },
-                label = { Text(dateRangeSelected, style = Typography.headlineMedium) },
-                trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, null) })
+                label = { Text(dateRangeSelected, style = typography.headlineMedium) },
+                trailingIcon = { Icon(painterResource(R.drawable.arrow_drop_down), null) })
             DropdownMenu(expanded = filterExpanded, onDismissRequest = { filterExpanded = false }) {
                 listOf("2024", "2023", "2022").forEach {
                     DropdownMenuItem(
@@ -97,7 +92,7 @@ fun StatsDateRangePicker(modifier: Modifier = Modifier) {
                             filterExpanded = false
                         },
                         trailingIcon = {
-                            if (dateRangeSelected == it) Icon(Icons.Outlined.Check, null)
+                            if (dateRangeSelected == it) Icon(painterResource(R.drawable.check), null)
                         }
                     )
                 }
@@ -113,11 +108,11 @@ fun OverviewStats(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxWidth()
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("24", style = Typography.headlineLarge)
+            Text("24", style = typography.headlineLarge)
             Text("Books")
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("24,000", style = Typography.headlineLarge)
+            Text("24,000", style = typography.headlineLarge)
             Text("Pages")
         }
 
@@ -129,12 +124,12 @@ fun OverviewStats(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            Icons.Outlined.Star,
+            painterResource(R.drawable.star_outlined),
             null,
             tint = Color.Yellow,
             modifier = Modifier.size(50.dp)
         )
-        Text("Avg 4.4", style = Typography.headlineMedium)
+        Text("Avg 4.4", style = typography.headlineMedium)
     }
 }
 
@@ -143,21 +138,21 @@ fun PageCounts(
     pageCounts: Map<String, Int>,
     modifier: Modifier = Modifier,
 ) {
-    Text("Page Counts", style = Typography.titleLarge)
+    Text("Page Counts", style = typography.titleLarge)
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         pageCounts.onEachIndexed { index, (title, pages) ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(title, style = Typography.titleMedium)
+                Text(title, style = typography.titleMedium)
                 Box(
                     modifier = Modifier
                         .width(10.dp * (index + 1))
                         .height(48.dp)
                         .background(MaterialTheme.colorScheme.primaryContainer)
                 ) {}
-                Text(text = pages.toString(), style = Typography.headlineMedium)
+                Text(text = pages.toString(), style = typography.headlineMedium)
                 Text("Pages")
             }
         }
@@ -172,7 +167,7 @@ fun FormatStats(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GenreStats(chartPoints: List<GenreData>, modifier: Modifier = Modifier) {
-    Text(text = "Genres", style = Typography.titleLarge)
+    Text(text = "Genres", style = typography.titleLarge)
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.fillMaxWidth()) {
         Canvas(
             modifier = modifier
@@ -206,7 +201,7 @@ fun GenreStats(chartPoints: List<GenreData>, modifier: Modifier = Modifier) {
                     .background(color = it.color, shape = RoundedCornerShape(4.dp))
                     .size(24.dp)
             )
-            Text(text = it.genre, style = Typography.titleMedium)
+            Text(text = it.genre, style = typography.titleMedium)
         }
     }
 

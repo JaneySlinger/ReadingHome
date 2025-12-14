@@ -13,6 +13,7 @@ data class TBRBook(
     val releaseDate: Date? = null,
     val dateAdded: Date = Date(),
     val description: String? = null,
+    val reasonToRead: String? = null,
 )
 
 fun TBRBookEntity.toTBRBook(): TBRBook = TBRBook(
@@ -25,4 +26,5 @@ fun TBRBookEntity.toTBRBook(): TBRBook = TBRBook(
     releaseDate = releaseDate,
     dateAdded = dateAdded,
     description = description,
+    reasonToRead = reasonForInterest.ifBlank { null }
 )

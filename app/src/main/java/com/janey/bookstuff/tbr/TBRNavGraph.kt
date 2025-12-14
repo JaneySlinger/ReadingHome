@@ -3,9 +3,11 @@ package com.janey.bookstuff.tbr
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import androidx.navigation.navigation
 import com.janey.bookstuff.ProvideAnimatedContentScope
 import com.janey.bookstuff.navigation.Graphs
@@ -46,7 +48,12 @@ fun NavGraphBuilder.tbrNavGraph(navController: NavController) {
         composable(route = TBRRoutes.TBR_ADD.route) {
             InitialAddTBRScreen(
                 viewModel = hiltViewModel(),
-                onQuickAddClicked = { /* TODO Janey */ },
+                onQuickAddClicked = {
+                    navController.navigate(route = TBRRoutes.TBR_BOOKS.route, navOptions {
+                        popUpTo(TBRRoutes.TBR_BOOKS.route)
+                    } )
+                                    },
+
                 onContinueClicked = { title, author ->
                     navController.navigate(
                         route = "${TBRRoutes.TBR_ADD_DETAIL.name}/${title}&${author}"

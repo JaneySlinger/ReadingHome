@@ -47,7 +47,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.janey.bookstuff.R
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
 import java.time.LocalDate
 
 @Composable
@@ -66,7 +66,7 @@ fun LibraryScreen(
 
 @Composable
 fun LibraryHolds(holds: List<String>) {
-    Text("Physical Holds", style = Typography.headlineMedium)
+    Text("Physical Holds", style = typography.headlineMedium)
     HoldBookCard(
         bookId = 1,
         title = "Gideon the Ninth",
@@ -89,7 +89,7 @@ fun LibraryHolds(holds: List<String>) {
 
 @Composable
 fun CurrentCheckouts(checkouts: List<String>) {
-    Text("Current Checkouts", style = Typography.headlineMedium)
+    Text("Current Checkouts", style = typography.headlineMedium)
     FilterRow()
     CheckedOutLibraryBookCard(
         bookId = 1,
@@ -228,8 +228,8 @@ fun CheckedOutLibraryBookCard(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Text(title, style = Typography.headlineMedium)
-                    Text(dueDate, style = Typography.bodyMedium)
+                    Text(title, style = typography.headlineMedium)
+                    Text(dueDate, style = typography.bodyMedium)
                     LibraryBookTypePill(isPhysical)
                 }
             }
@@ -290,8 +290,8 @@ fun HoldBookCard(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Text(title, style = Typography.headlineMedium)
-                    Text(status, style = Typography.bodyMedium)
+                    Text(title, style = typography.headlineMedium)
+                    Text(status, style = typography.bodyMedium)
                 }
             }
         }

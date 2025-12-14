@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -26,11 +27,15 @@ fun InitialAddTBRScreen(
         author = state.value.author,
         onTitleChanged = { viewModel.onTitleChanged(it) },
         onAuthorChanged = { viewModel.onAuthorChanged(it) },
-        onQuickAddClicked = onQuickAddClicked,
+        onQuickAddClicked = {
+            viewModel.onQuickAddClicked()
+            onQuickAddClicked()
+        },
         onContinueClicked = onContinueClicked
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InitialAddTBRScreenContent(
     title: String = "",

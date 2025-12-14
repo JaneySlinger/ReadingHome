@@ -13,7 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 data class TBRResultsState(
@@ -61,16 +63,16 @@ class TBRResultsViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             // TODO janey handle error case where index isn't in the list
             val book = results[selectedBook]
+            val releaseDate = book.releaseDate?.convertBookReleaseDateToDate()
+            val isReleased = releaseDate?.before(Date())
             val savedId = tbrRepository.insertBook(
                 book = TBRBookEntity(
                     title = book.title,
                     author = book.author,
                     imageUrl = book.imageUrl ?: "",
                     genres = book.genres.map { it.title },
-                    // TODO janey handle the release dates
-                    releaseDate = Date(),
-                    // TODO janey handle is released
-                    isReleased = true,
+                    releaseDate = book.releaseDate?.convertBookReleaseDateToDate(),
+                    isReleased = isReleased,
                     reasonForInterest = book.reasonsToRead ?: "",
                     pages = book.pageCount ?: 0,
                     dateAdded = Date(),
@@ -83,5 +85,18 @@ class TBRResultsViewModel @Inject constructor(
 
     fun resetNavigation() {
         state.update { state -> state.copy(canNavigateForwards = false) }
+    }
+
+    // TODO janey move somewhere else
+    /**
+     * convert date string in the format yyyy-MM-dd to a Date object
+     */
+    private fun String.convertBookReleaseDateToDate(): Date? {
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.UK)
+        return try {
+            dateFormatter.parse(this)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

@@ -6,13 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,8 @@ import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.components.BookImage
 import com.janey.bookstuff.ui.components.LoadingScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
+import java.text.SimpleDateFormat
 import java.util.Date
 
 /*
@@ -61,6 +63,7 @@ fun BookDetailsScreen(
         state.value.book != null -> BookDetailsScreenContent(
             book = state.value.book!!,
             onDescriptionUpdated = viewModel::updateDescription,
+            onReasonToReadUpdated = viewModel::updateReasonToRead,
             onSaveChanges = viewModel::saveChanges,
         )
 
@@ -68,11 +71,12 @@ fun BookDetailsScreen(
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BookDetailsScreenContent(
     book: TBRBook,
     onDescriptionUpdated: (String) -> Unit,
+    onReasonToReadUpdated: (String) -> Unit,
     onSaveChanges: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -82,7 +86,7 @@ fun BookDetailsScreenContent(
             BaseScreen {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     BookImage(
                         height = 200.dp,
@@ -92,26 +96,29 @@ fun BookDetailsScreenContent(
                                 animatedVisibilityScope = this@WithAnimatedContentScope,
                             )
                     )
-                    ReleaseDate((book.releaseDate ?: "Unknown").toString())
+                    ReleaseDate(book.releaseDate)
                     // TODO fix
 //                    Genres(book.genres)
-                    Text(text = book.title, style = Typography.titleLarge)
-                    Text(text = book.author, style = Typography.titleSmall)
+                    Text(
+                        text = book.title,
+                        style = typography.titleLargeEmphasized
+                    )
+                    Text(text = book.author, style = typography.titleLarge)
                     Text("${book.pages} pages")
                 }
-                // TODO fix
-//                book.reasonsToRead?.let {
-//                    Card {
-//                        Text(
-//                            modifier = Modifier.padding(8.dp),
-//                            text = it
-//                        )
-//                    }
-//                }
+                EditableComponent(
+                    contentTitle = "Reason for interest",
+                    contentBody = book.reasonToRead,
+                    onContentBodyChanged = onReasonToReadUpdated,
+                    placeholderText = "Why do you want to read it?",
+                    onSaveClicked = onSaveChanges,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
                 EditableComponent(
                     contentTitle = "Description",
                     contentBody = book.description,
                     onContentBodyChanged = onDescriptionUpdated,
+                    placeholderText = "What is the book about?",
                     onSaveClicked = onSaveChanges,
                 )
             }
@@ -134,12 +141,14 @@ fun Genres(genres: List<Genre>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ReleaseDate(releaseDate: String) {
+fun ReleaseDate(releaseDate: Date?) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(painterResource(R.drawable.date_range), null)
-        Text(releaseDate)
-        // TODO janey format the date from the service somewhere
-//        Text(DateFormat.format("dd MMM yyyy", releaseDate).toString())
+        releaseDate?.let {
+            val formatter = SimpleDateFormat("dd MMM yyyy", Locale.current.platformLocale)
+            val text = formatter.format(releaseDate)
+            Text(text)
+        } ?: Text("Unknown")
     }
 }
 
@@ -147,6 +156,7 @@ fun ReleaseDate(releaseDate: String) {
 fun EditableComponent(
     contentTitle: String,
     contentBody: String?,
+    placeholderText: String,
     onContentBodyChanged: (String) -> Unit,
     onSaveClicked: () -> Unit,
 ) {
@@ -160,7 +170,7 @@ fun EditableComponent(
         ) {
             Text(
                 text = contentTitle,
-                style = Typography.headlineSmall,
+                style = typography.headlineSmall,
                 modifier = Modifier.weight(1f)
             )
             IconToggleButton(
@@ -171,18 +181,18 @@ fun EditableComponent(
                 }
             ) {
                 when (readOnly) {
-                    true -> Icon(Icons.Outlined.Edit, contentDescription = "Edit")
-                    false -> Icon(Icons.Filled.Check, contentDescription = "Save")
+                    true -> Icon(painterResource(R.drawable.edit), contentDescription = "Edit")
+                    false -> Icon(painterResource(R.drawable.check), contentDescription = "Save")
                 }
             }
         }
         HorizontalDivider()
         TextField(
             readOnly = readOnly,
-            textStyle = Typography.bodyLarge,
+            textStyle = typography.bodyLarge,
             value = contentBody ?: "",
             onValueChange = onContentBodyChanged,
-            placeholder = { Text("What is the book about?")},
+            placeholder = { Text(placeholderText)},
             modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth()
         )
     }
@@ -195,7 +205,8 @@ private fun EditableComponentPreview() {
         EditableComponent(
             contentTitle = "Description",
             contentBody = previewBookDescription,
-            onContentBodyChanged = {}
+            placeholderText = "Placeholder text",
+            onContentBodyChanged = {},
         ) {}
     }
 }
@@ -207,6 +218,7 @@ private fun EditableComponentNullContentPreview() {
         EditableComponent(
             contentTitle = "Description",
             contentBody = null,
+            placeholderText = "Placeholder text",
             onContentBodyChanged = {}
         ) {}
     }
@@ -227,10 +239,11 @@ private fun BookDetailsScreenPreview() {
                 description = previewBookDescription,
 //                releaseDate = "2024-03-05",
                 releaseDate = Date(),
-//                reasonsToRead = "Entertaining and dark. Heard good things about it.",
+                reasonToRead = "Entertaining and dark. Heard good things about it.",
                 genres = setOf(Genre.SCI_FI, Genre.ROMANCE),
             ),
             onDescriptionUpdated = {},
+            onReasonToReadUpdated = {},
             onSaveChanges = {},
         )
     }
@@ -248,16 +261,17 @@ private fun BookDetailsScreenLessDataPreview() {
                 imageUrl = "",
                 pages = 355,
                 description = null,
-//                releaseDate = "2024-03-05",
-                releaseDate = Date(),
-//                reasonsToRead = "Entertaining and dark. Heard good things about it.",
+                releaseDate = null,
+                reasonToRead = null,
                 genres = setOf(Genre.SCI_FI, Genre.ROMANCE),
             ),
             onDescriptionUpdated = {},
+            onReasonToReadUpdated = {},
             onSaveChanges = {},
         )
     }
 }
+
 
 private const val previewBookDescription =
     "The Emperor needs necromancers.\n" + "\n" + "The Ninth Necromancer needs a swordswoman.\n" + "\n" + "Gideon has a sword, some dirty magazines, and no more time for undead bullshit.\n" + "\n" + "Brought up by unfriendly, ossifying nuns, ancient retainers, and countless skeletons, Gideon is ready to abandon a life of servitude and an afterlife as a reanimated corpse. She packs up her sword, her shoes, and her dirty magazines, and prepares to launch her daring escape. But her childhood nemesis won't set her free without a service.\n" + "\n" + "Harrowhark Nonagesimus, Reverend Daughter of the Ninth House and bone witch extraordinaire, has been summoned into action. The Emperor has invited the heirs to each of his loyal Houses to a deadly trial of wits and skill. If Harrowhark succeeds she will become an immortal, all-powerful servant of the Resurrection, but no necromancer can ascend without their cavalier. Without Gideon's sword, Harrow will fail, and the Ninth House will die.\n" + "\n" + "Of course, some things are better left dead."

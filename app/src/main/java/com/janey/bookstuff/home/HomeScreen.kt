@@ -17,7 +17,7 @@ import com.janey.bookstuff.tbr.RecentlyReleased
 import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.components.HorizontalPagerIndicator
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
 
 @Composable
 fun HomeScreen() {
@@ -33,7 +33,7 @@ fun ExpiringSoonRow() {
     val pagerState = rememberPagerState(pageCount = {
         4
     })
-    Text(text = "Expiring Soon...", style = Typography.headlineMedium)
+    Text(text = "Expiring Soon...", style = typography.headlineMedium)
 
     HorizontalPager(
         state = pagerState,
@@ -57,7 +57,7 @@ fun ReadyForPickupRow() {
     val pagerState = rememberPagerState(pageCount = {
         3
     })
-    Text(text = "Ready for Pickup", style = Typography.headlineMedium)
+    Text(text = "Ready for Pickup", style = typography.headlineMedium)
     HorizontalPager(
         state = pagerState,
         contentPadding = PaddingValues(end = 16.dp)

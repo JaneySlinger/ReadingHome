@@ -27,7 +27,7 @@ import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.components.BookImage
 import com.janey.bookstuff.ui.components.HorizontalPagerIndicator
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
 
 @Composable
 fun AddTBRBookResultsScreen(
@@ -75,7 +75,7 @@ fun AddTBRBookResultsScreenContent(
             when (results.size) {
                 0 -> Text(
                     "Hmmm there aren't any results for that. You can enter it manually.",
-                    style = Typography.headlineMedium
+                    style = typography.headlineMedium
                 )
 
                 1 -> BookResultComponent(
@@ -110,8 +110,8 @@ fun MultipleResults(
         pageCount = { results.size }
     )
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Choose the cover and page count to add", style = Typography.headlineMedium)
-        Text("You can edit this later", style = Typography.titleSmall)
+        Text("Choose the cover and page count to add", style = typography.headlineMedium)
+        Text("You can edit this later", style = typography.titleSmall)
         HorizontalPager(
             verticalAlignment = Alignment.Top,
             state = pagerState,

@@ -22,10 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.ArrowDropDown
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -58,7 +54,7 @@ import com.janey.bookstuff.ui.components.BaseScreen
 import com.janey.bookstuff.ui.components.BookImage
 import com.janey.bookstuff.ui.components.LoadingScreen
 import com.janey.bookstuff.ui.theme.BookStuffTheme
-import com.janey.bookstuff.ui.theme.Typography
+import com.janey.bookstuff.ui.theme.typography
 
 @Composable
 fun TBRScreen(
@@ -71,7 +67,7 @@ fun TBRScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onAddBookClicked() }
-            ) { Icon(Icons.Filled.Add, null)}
+            ) { Icon(painterResource(R.drawable.add), null)}
         }
     ){ padding ->
         TBRScreenContent(
@@ -124,7 +120,7 @@ fun AddFab(onClick: () -> Unit = {}) {
         onClick = onClick,
     ) {
         Icon(
-            Icons.Filled.Add,
+            painterResource(R.drawable.add),
             contentDescription = "Add",
             modifier = Modifier.size(FloatingActionButtonDefaults.LargeIconSize)
         )
@@ -143,12 +139,12 @@ fun RecentlyReleased() {
         Column(modifier = Modifier.padding(8.dp)) {
             Text(
                 text = "Recently Released",
-                style = Typography.headlineMedium,
+                style = typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "These books you were interested in were released recently, why not check them out?",
-                style = Typography.bodyMedium,
+                style = typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
@@ -181,7 +177,7 @@ fun SortDropDown(
             onClick = { sortExpanded = true },
             label = { Text(sortType.title) },
             leadingIcon = { Icon(painterResource(sortType.icon), contentDescription = null) },
-            trailingIcon = { Icon(Icons.Outlined.ArrowDropDown, null) })
+            trailingIcon = { Icon(painterResource(R.drawable.arrow_drop_down), null) })
         DropdownMenu(expanded = sortExpanded, onDismissRequest = { sortExpanded = false }) {
             SortType.entries.forEach {
                 DropdownMenuItem(
@@ -192,7 +188,7 @@ fun SortDropDown(
                     },
                     leadingIcon = { Icon(painterResource(it.icon), contentDescription = null) },
                     trailingIcon = {
-                        if (sortType == it) Icon(Icons.Outlined.Check, null)
+                        if (sortType == it) Icon(painterResource(R.drawable.check), null)
                     }
                 )
             }
@@ -296,9 +292,9 @@ private fun TBRListLayout(
                             height = 150.dp
                         )
                         Column(modifier = Modifier.padding(start = 4.dp)) {
-                            Text(text = book.title, style = Typography.headlineSmall)
-                            Text(text = book.author, style = Typography.bodyMedium)
-                            Text(text = "${book.pages} pages", style = Typography.bodyMedium)
+                            Text(text = book.title, style = typography.headlineSmall)
+                            Text(text = book.author, style = typography.bodyMedium)
+                            Text(text = "${book.pages} pages", style = typography.bodyMedium)
                             Row() {
                                 book.genres.forEach { genre ->
                                     Box(
@@ -309,7 +305,7 @@ private fun TBRListLayout(
                                     ) {
                                         Text(
                                             text = genre.title,
-                                            style = Typography.labelMedium,
+                                            style = typography.labelMedium,
                                             modifier = Modifier.padding(4.dp)
                                         )
                                     }
